@@ -539,39 +539,54 @@
     }
 
     // 把后端返回的 result 渲染到页面
+
     function renderAnalysisResult(r) {
-      if (!analysisResult) return;
-      if (!r) {
-        analysisResult.innerHTML = "";
-        return;
-      }
-
-      let html = "";
-
-      if (r.title) {
-        html += `<strong>${r.title}</strong><br/>`;
-      }
-      if (r.pattern) {
-        html += `<div style="margin-top:6px;"><strong>可能相关证候（示例）：</strong>${r.pattern}</div>`;
-      }
-      if (r.explanation) {
-        html += `<div style="margin-top:6px;"><strong>辨证思路：</strong>${r.explanation}</div>`;
-      }
-      if (r.principle) {
-        html += `<div style="margin-top:6px;"><strong>治法思路：</strong>${r.principle}</div>`;
-      }
-      if (r.acupuncture) {
-        html += `<div style="margin-top:6px;"><strong>针灸取穴参考：</strong>${r.acupuncture}</div>`;
-      }
-      if (r.herbal) {
-        html += `<div style="margin-top:6px;"><strong>中药方药思路：</strong>${r.herbal}</div>`;
-      }
-      if (r.warning) {
-        html += `<div style="margin-top:8px;color:#b00000;"><strong>重要提示：</strong>${r.warning}</div>`;
-      }
-
-      analysisResult.innerHTML = html;
+    if (!analysisResult) return;
+    if (!r) {
+      analysisResult.innerHTML = "";
+      return;
     }
+  
+    let html = "";
+  
+    if (r.title) {
+      html += `<strong>${r.title}</strong><br/>`;
+    }
+    if (r.pattern) {
+      html += `<div style="margin-top:6px;"><strong>可能相关证候（示例）：</strong>${r.pattern}</div>`;
+    }
+    if (r.explanation) {
+      html += `<div style="margin-top:6px;"><strong>辨证思路：</strong>${r.explanation}</div>`;
+    }
+    if (r.principle) {
+      html += `<div style="margin-top:6px;"><strong>治法思路：</strong>${r.principle}</div>`;
+    }
+    if (r.acupuncture) {
+      html += `<div style="margin-top:6px;"><strong>针灸取穴参考：</strong>${r.acupuncture}</div>`;
+    }
+    if (r.herbal) {
+      html += `<div style="margin-top:6px;"><strong>中药方药思路：</strong>${r.herbal}</div>`;
+    }
+  
+    // 新增：AI 学习说明
+    if (r.aiNotes) {
+      html += `<div style="margin-top:10px;padding-top:8px;border-top:1px dashed #ddd;">
+        <strong>AI 学习说明：</strong>${r.aiNotes}
+      </div>`;
+    }
+  
+    // 新增：AI 出错信息
+    if (r.aiError) {
+      html += `<div style="margin-top:6px;color:#b00000;"><strong>AI 提示：</strong>${r.aiError}</div>`;
+    }
+  
+    if (r.warning) {
+      html += `<div style="margin-top:8px;color:#b00000;"><strong>重要提示：</strong>${r.warning}</div>`;
+    }
+  
+    analysisResult.innerHTML = html;
+  }
+
   </script>
 </body>
 </html>
