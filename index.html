@@ -28,13 +28,16 @@
     }
 
     svg {
-      max-width: 320px;
+      width: 100%;
+      max-width: 380px;      /* 桌面上最多这么宽 */
+      min-width: 260px;      /* 再小也别小于这个 */
       height: auto;
       border: 1px solid #eee;
       border-radius: 12px;
       padding: 12px;
       background: radial-gradient(circle at 50% 0%, #fdfdfd, #f3f3f3);
     }
+
 
     /* 人体外轮廓线条 */
     .body-outline {
