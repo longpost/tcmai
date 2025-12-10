@@ -1,27 +1,412 @@
-Owner avatar
-tcmai
-Public
-Set up GitHub Copilot
-Use GitHub's AI pair programmer to autocomplete suggestions as you code.
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>中医人体部位选择（SVG 精简版）</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 16px;
+      display: flex;
+      gap: 16px;
+    }
 
-Add collaborators to this repository
-Search for people using their GitHub username or email address.
+    .container {
+      display: flex;
+      flex: 1;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
 
-Quick setup — if you’ve done this kind of thing before
-or	
-https://github.com/longpost/tcmai.git
-Get started by creating a new file or uploading an existing file. We recommend every repository include a README, LICENSE, and .gitignore.
+    .body-wrapper {
+      flex: 1;
+      min-width: 260px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
 
-…or create a new repository on the command line
-echo "# tcmai" >> README.md
-git init
-git add README.md
-git commit -m "first commit"
-git branch -M main
-git remote add origin https://github.com/longpost/tcmai.git
-git push -u origin main
-…or push an existing repository from the command line
-git remote add origin https://github.com/longpost/tcmai.git
-git branch -M main
-git push -u origin main
- ProTip! Use the URL for this page when adding Gi
+    svg {
+      max-width: 320px;
+      height: auto;
+      border: 1px solid #eee;
+      border-radius: 12px;
+      padding: 12px;
+      background: radial-gradient(circle at 50% 0%, #fdfdfd, #f3f3f3);
+    }
+
+    .body-outline {
+      fill: #f5f5f5;
+      stroke: #ccc;
+      stroke-width: 1.2;
+    }
+
+    .region {
+      fill: rgba(180, 200, 255, 0.15);
+      stroke: rgba(0, 0, 0, 0);
+      stroke-width: 1;
+      cursor: pointer;
+      transition: fill 0.15s ease, stroke 0.15s ease;
+    }
+
+    .region:hover {
+      fill: rgba(100, 150, 255, 0.35);
+    }
+
+    .region.active {
+      fill: rgba(0, 122, 255, 0.45);
+      stroke: #0051c8;
+      stroke-width: 1.5;
+    }
+
+    .panel {
+      flex: 1;
+      min-width: 260px;
+    }
+
+    .panel h2 {
+      margin-top: 0;
+      font-size: 18px;
+    }
+
+    .symptom-group {
+      margin-bottom: 12px;
+    }
+
+    .symptom-group h3 {
+      margin: 8px 0;
+      font-size: 16px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 4px;
+    }
+
+    label {
+      display: inline-flex;
+      align-items: center;
+      margin: 4px 8px 4px 0;
+      font-size: 14px;
+    }
+
+    label input {
+      margin-right: 4px;
+    }
+
+    .selected-summary {
+      margin-top: 16px;
+      padding: 8px;
+      border-radius: 8px;
+      background: #f7f7f7;
+      font-size: 14px;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- 左侧：人体 SVG 示意图 -->
+    <div class="body-wrapper">
+      <!-- viewBox 0 0 200 480，大致纵向人体 -->
+      <svg viewBox="0 0 200 480" aria-label="人体前视平面图">
+        <!-- 整体轮廓（只是装饰，不可点） -->
+        <path class="body-outline"
+          d="M100 20
+             C 85 20, 72 32, 72 48
+             L 72 70
+             C 60 90, 50 115, 48 140
+             L 44 200
+             C 42 230, 48 260, 56 290
+             L 64 330
+             L 72 380
+             C 74 400, 78 430, 80 450
+             L 90 470
+             L 110 470
+             L 120 450
+             C 122 430, 126 400, 128 380
+             L 136 330
+             L 144 290
+             C 152 260, 158 230, 156 200
+             L 152 140
+             C 150 115, 140 90, 128 70
+             L 128 48
+             C 128 32, 115 20, 100 20 Z" />
+
+        <!-- 头部 -->
+        <circle class="region" data-region="head"
+          cx="100" cy="40" r="20" />
+
+        <!-- 颈部 -->
+        <rect class="region" data-region="neck"
+          x="90" y="60" width="20" height="15" rx="4" />
+
+        <!-- 上胸（心肺区） -->
+        <path class="region" data-region="upper_chest"
+          d="M78 75
+             Q 100 70, 122 75
+             L 130 110
+             Q 100 118, 70 110
+             Z" />
+
+        <!-- 中胸（膈肌附近） -->
+        <path class="region" data-region="mid_chest"
+          d="M72 110
+             Q 100 116, 128 110
+             L 132 135
+             Q 100 140, 68 135
+             Z" />
+
+        <!-- 上腹（胃脘） -->
+        <path class="region" data-region="upper_abdomen"
+          d="M70 135
+             Q 100 142, 130 135
+             L 134 165
+             Q 100 172, 66 165
+             Z" />
+
+        <!-- 中腹（小肠区） -->
+        <path class="region" data-region="mid_abdomen"
+          d="M68 165
+             Q 100 172, 132 165
+             L 136 195
+             Q 100 202, 64 195
+             Z" />
+
+        <!-- 下腹 / 盆腔 -->
+        <path class="region" data-region="lower_abdomen"
+          d="M66 195
+             Q 100 204, 134 195
+             L 136 225
+             Q 100 235, 64 225
+             Z" />
+
+        <!-- 左肩 + 上臂 -->
+        <path class="region" data-region="left_shoulder_arm"
+          d="M72 80
+             L 52 85
+             Q 45 110, 48 140
+             L 50 185
+             Q 60 190, 68 188
+             L 66 140
+             Q 64 110, 72 90
+             Z" />
+
+        <!-- 右肩 + 上臂 -->
+        <path class="region" data-region="right_shoulder_arm"
+          d="M128 80
+             L 148 85
+             Q 155 110, 152 140
+             L 150 185
+             Q 140 190, 132 188
+             L 134 140
+             Q 136 110, 128 90
+             Z" />
+
+        <!-- 左前臂 + 手 -->
+        <path class="region" data-region="left_forearm_hand"
+          d="M50 185
+             Q 40 215, 42 245
+             L 44 270
+             Q 50 280, 58 278
+             L 60 245
+             Q 58 215, 66 195
+             Z" />
+
+        <!-- 右前臂 + 手 -->
+        <path class="region" data-region="right_forearm_hand"
+          d="M150 185
+             Q 160 215, 158 245
+             L 156 270
+             Q 150 280, 142 278
+             L 140 245
+             Q 142 215, 134 195
+             Z" />
+
+        <!-- 左大腿 -->
+        <path class="region" data-region="left_thigh"
+          d="M78 235
+             Q 72 260, 74 290
+             L 78 330
+             Q 84 340, 88 340
+             L 92 290
+             Q 90 260, 92 240
+             Z" />
+
+        <!-- 右大腿 -->
+        <path class="region" data-region="right_thigh"
+          d="M122 235
+             Q 128 260, 126 290
+             L 122 330
+             Q 116 340, 112 340
+             L 108 290
+             Q 110 260, 108 240
+             Z" />
+
+        <!-- 左小腿 + 足 -->
+        <path class="region" data-region="left_leg_foot"
+          d="M84 330
+             Q 80 360, 82 390
+             L 84 430
+             Q 88 440, 94 442
+             L 96 430
+             L 96 390
+             Q 94 360, 96 340
+             Z" />
+
+        <!-- 右小腿 + 足 -->
+        <path class="region" data-region="right_leg_foot"
+          d="M116 330
+             Q 120 360, 118 390
+             L 116 430
+             Q 112 440, 106 442
+             L 104 430
+             L 104 390
+             Q 106 360, 104 340
+             Z" />
+      </svg>
+    </div>
+
+    <!-- 右侧：症状选择面板 -->
+    <div class="panel">
+      <h2>部位症状选择</h2>
+      <p id="current-region-label">请点击左侧人体某个部位。</p>
+      <div id="symptom-container"></div>
+
+      <div class="selected-summary" id="selected-summary">
+        当前已选择症状：无
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const symptomOptions = {
+      head: ["头痛", "偏头痛", "头晕", "头重如裹", "头胀痛", "眩晕"],
+      neck: ["颈项强痛", "落枕样不利", "颈部酸胀", "咽喉不适", "吞咽不利"],
+      upper_chest: ["胸闷", "心前区刺痛", "心悸", "心慌易惊", "气短懒言", "咳嗽"],
+      mid_chest: ["胸胁胀痛", "叹息频作", "肋下隐痛", "呼吸不畅"],
+      upper_abdomen: ["胃脘胀痛", "胃脘隐痛", "嗳气", "反酸", "胃纳不佳", "饱胀不舒"],
+      mid_abdomen: ["腹胀", "腹痛喜按", "腹痛拒按", "肠鸣", "大便不爽"],
+      lower_abdomen: ["小腹坠胀", "小腹冷痛", "痛经", "经行腹痛", "尿频", "尿急", "尿痛"],
+      left_shoulder_arm: ["左肩痛", "左臂酸胀", "上肢麻木", "抬举费力"],
+      right_shoulder_arm: ["右肩痛", "右臂酸胀", "上肢麻木", "抬举费力"],
+      left_forearm_hand: ["左前臂酸痛", "手指麻木", "握物无力", "手冷"],
+      right_forearm_hand: ["右前臂酸痛", "手指麻木", "握物无力", "手冷"],
+      left_thigh: ["左大腿酸痛", "乏力", "放射样痛", "麻木"],
+      right_thigh: ["右大腿酸痛", "乏力", "放射样痛", "麻木"],
+      left_leg_foot: ["左小腿酸胀", "膝关节痛", "小腿抽筋", "下肢浮肿", "足冷"],
+      right_leg_foot: ["右小腿酸胀", "膝关节痛", "小腿抽筋", "下肢浮肿", "足冷"]
+    };
+
+    const regionLabels = {
+      head: "头部",
+      neck: "颈部",
+      upper_chest: "上胸（心肺区）",
+      mid_chest: "中胸 / 胸胁",
+      upper_abdomen: "上腹（胃脘）",
+      mid_abdomen: "中腹（肠区）",
+      lower_abdomen: "下腹 / 盆腔",
+      left_shoulder_arm: "左肩 / 上臂",
+      right_shoulder_arm: "右肩 / 上臂",
+      left_forearm_hand: "左前臂 / 手",
+      right_forearm_hand: "右前臂 / 手",
+      left_thigh: "左大腿",
+      right_thigh: "右大腿",
+      left_leg_foot: "左小腿 / 足",
+      right_leg_foot: "右小腿 / 足"
+    };
+
+    const selectedSymptoms = {};
+    const regions = document.querySelectorAll('.region');
+    const symptomContainer = document.getElementById('symptom-container');
+    const currentRegionLabel = document.getElementById('current-region-label');
+    const selectedSummary = document.getElementById('selected-summary');
+
+    let currentRegion = null;
+
+    regions.forEach(region => {
+      region.addEventListener('click', () => {
+        const key = region.dataset.region;
+        currentRegion = key;
+
+        regions.forEach(r => r.classList.remove('active'));
+        region.classList.add('active');
+
+        const label = regionLabels[key] || key;
+        currentRegionLabel.textContent = `当前部位：${label}（请勾选症状）`;
+
+        renderSymptomsForRegion(key);
+      });
+    });
+
+    function renderSymptomsForRegion(regionKey) {
+      const options = symptomOptions[regionKey] || [];
+      symptomContainer.innerHTML = "";
+
+      if (options.length === 0) {
+        symptomContainer.textContent = "该部位暂未设置症状选项。";
+        return;
+      }
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'symptom-group';
+
+      const title = document.createElement('h3');
+      title.textContent = regionLabels[regionKey] + "相关症状";
+      wrapper.appendChild(title);
+
+      if (!selectedSymptoms[regionKey]) {
+        selectedSymptoms[regionKey] = new Set();
+      }
+
+      options.forEach(sym => {
+        const label = document.createElement('label');
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.value = sym;
+
+        if (selectedSymptoms[regionKey].has(sym)) {
+          checkbox.checked = true;
+        }
+
+        checkbox.addEventListener('change', () => {
+          if (checkbox.checked) {
+            selectedSymptoms[regionKey].add(sym);
+          } else {
+            selectedSymptoms[regionKey].delete(sym);
+          }
+          updateSelectedSummary();
+        });
+
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode(sym));
+        wrapper.appendChild(label);
+      });
+
+      symptomContainer.appendChild(wrapper);
+    }
+
+    function updateSelectedSummary() {
+      const parts = [];
+
+      Object.keys(selectedSymptoms).forEach(regionKey => {
+        const set = selectedSymptoms[regionKey];
+        if (set.size > 0) {
+          const label = regionLabels[regionKey] || regionKey;
+          parts.push(label + "：" + Array.from(set).join("，"));
+        }
+      });
+
+      if (parts.length === 0) {
+        selectedSummary.textContent = "当前已选择症状：无";
+      } else {
+        selectedSummary.textContent = "当前已选择症状：" + parts.join("；");
+      }
+    }
+  </script>
+</body>
+</html>
+
