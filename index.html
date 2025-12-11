@@ -107,6 +107,22 @@
       background: radial-gradient(circle at 50% 0%, #fdfdfd, #f3f3f3);
     }
 
+    .svg-clickable {
+      cursor: pointer;
+      transition: fill 0.12s ease, stroke 0.12s ease;
+    }
+
+    .svg-clickable:hover {
+      fill: #f0f8ff;
+      stroke: #99ccee;
+    }
+
+    .svg-label {
+      font-size: 8px;
+      fill: #888;
+      pointer-events: none;
+    }
+
     .symptom-tags {
       display: flex;
       flex-wrap: wrap;
@@ -237,25 +253,73 @@
   <div class="body-wrapper card">
     <h1>部位选择</h1>
     <div class="body-region-buttons" id="regionButtons"></div>
-
-    <!-- 人形简化示意图，可点击不同部位（目前点击逻辑在按钮上，图只是展示） -->
+    <!-- 人形示意图：各部分可点击选择部位 + 全身/大便/小便 -->
     <svg viewBox="0 0 200 400" aria-label="人体平面示意图">
-      <!-- 头 -->
-      <circle cx="100" cy="50" r="25" fill="#fdfdfd" stroke="#ccc" />
-      <!-- 躯干 -->
-      <rect x="75" y="80" width="50" height="100" rx="20" fill="#fdfdfd" stroke="#ccc" />
-      <!-- 手臂 -->
-      <rect x="45" y="90" width="25" height="90" rx="12" fill="#fdfdfd" stroke="#ccc" />
-      <rect x="130" y="90" width="25" height="90" rx="12" fill="#fdfdfd" stroke="#ccc" />
-      <!-- 骨盆/下腹 -->
-      <rect x="80" y="180" width="40" height="40" rx="16" fill="#fdfdfd" stroke="#ccc" />
-      <!-- 双腿 -->
-      <rect x="80" y="220" width="16" height="80" rx="10" fill="#fdfdfd" stroke="#ccc" />
-      <rect x="104" y="220" width="16" height="80" rx="10" fill="#fdfdfd" stroke="#ccc" />
+      <!-- 头部区域：head -->
+      <g class="svg-clickable" onclick="selectRegion('head')">
+        <circle cx="100" cy="50" r="25" fill="#fdfdfd" stroke="#ccc" />
+        <text x="100" y="52" text-anchor="middle" class="svg-label">头部</text>
+      </g>
+
+      <!-- 胸部 / 心肺：chest -->
+      <g class="svg-clickable" onclick="selectRegion('chest')">
+        <!-- 上半躯干偏上，胸腔 -->
+        <rect x="75" y="80" width="50" height="40" rx="16" fill="#fdfdfd" stroke="#ccc" />
+        <text x="100" y="102" text-anchor="middle" class="svg-label">胸部</text>
+      </g>
+
+      <!-- 上腹 / 胃脘：upperAbd -->
+      <g class="svg-clickable" onclick="selectRegion('upperAbd')">
+        <rect x="75" y="120" width="50" height="40" rx="16" fill="#fdfdfd" stroke="#ccc" />
+        <text x="100" y="142" text-anchor="middle" class="svg-label">上腹</text>
+      </g>
+
+      <!-- 中腹：midAbd -->
+      <g class="svg-clickable" onclick="selectRegion('midAbd')">
+        <rect x="75" y="160" width="50" height="30" rx="14" fill="#fdfdfd" stroke="#ccc" />
+        <text x="100" y="178" text-anchor="middle" class="svg-label">中腹</text>
+      </g>
+
+      <!-- 下腹 / 小腹：lowerAbd -->
+      <g class="svg-clickable" onclick="selectRegion('lowerAbd')">
+        <rect x="80" y="190" width="40" height="40" rx="16" fill="#fdfdfd" stroke="#ccc" />
+        <text x="100" y="212" text-anchor="middle" class="svg-label">下腹</text>
+      </g>
+
+      <!-- 手臂 + 下肢 = 全身/体质：whole -->
+      <g class="svg-clickable" onclick="selectRegion('whole')">
+        <!-- 手臂 -->
+        <rect x="45" y="90" width="25" height="90" rx="12" fill="#fdfdfd" stroke="#ccc" />
+        <rect x="130" y="90" width="25" height="90" rx="12" fill="#fdfdfd" stroke="#ccc" />
+        <!-- 双腿 -->
+        <rect x="80" y="230" width="16" height="70" rx="10" fill="#fdfdfd" stroke="#ccc" />
+        <rect x="104" y="230" width="16" height="70" rx="10" fill="#fdfdfd" stroke="#ccc" />
+        <text x="100" y="320" text-anchor="middle" class="svg-label">全身/四肢</text>
+      </g>
+
+      <!-- 大便：stool -->
+      <g class="svg-clickable" onclick="selectRegion('stool')">
+        <rect x="30" y="330" width="50" height="24" rx="10" fill="#fdfdfd" stroke="#ccc" />
+        <text x="55" y="347" text-anchor="middle" class="svg-label">大便</text>
+      </g>
+
+      <!-- 小便：urine -->
+      <g class="svg-clickable" onclick="selectRegion('urine')">
+        <rect x="120" y="330" width="50" height="24" rx="10" fill="#fdfdfd" stroke="#ccc" />
+        <text x="145" y="347" text-anchor="middle" class="svg-label">小便</text>
+      </g>
+
+      <!-- 单独一个“总体/体质”按钮，给不想点手脚的人用 -->
+      <g class="svg-clickable" onclick="selectRegion('whole')">
+        <circle cx="100" cy="370" r="14" fill="#fdfdfd" stroke="#ccc" />
+        <text x="100" y="373" text-anchor="middle" class="svg-label">体质</text>
+      </g>
     </svg>
+    
     <div class="hint">
-      提示：上面的人形图仅作示意，实际部位选择请使用上方按钮。
+      小提示：可直接点击人形图上的“头部、胸部、腹部、全身/四肢、体质、大便、小便”等区域来切换部位，也可以用上方按钮。
     </div>
+
   </div>
 
   <div class="right-wrapper">
@@ -290,11 +354,12 @@
   </div>
 
   <script>
-    // ===== 1. 配置：后端 API 地址（你自己改成实际域名） =====
-    // 比如：const API_URL = "https://tcmai-api-git-main-longposts-projects.vercel.app/api/analyze";
+    // ===== 1. 配置：后端 API 地址 =====
+    // TODO：这里改成你自己的 API 域名，比如：
+    // const API_URL = "https://tcmai-api-git-main-longposts-projects.vercel.app/api/analyze";
     const API_URL = "https://tcmai-api.vercel.app/api/analyze"; // 占位，你自己改
 
-    // ===== 2. 前端定义各部位及常用症状（名称要尽量和后端 TCM_SYMPTOM_FEATURES 对上） =====
+    // ===== 2. 定义部位及对应症状 =====
     const BODY_REGIONS = {
       head: {
         key: "head",
@@ -358,7 +423,6 @@
       }
     };
 
-    // 当前选中的部位 key
     let currentRegionKey = "head";
 
     // 所有已选症状：[{regionKey, regionLabel, symptom}]
@@ -371,7 +435,19 @@
     const analyzeBtn = document.getElementById("analyzeBtn");
     const analysisResultEl = document.getElementById("analysisResult");
 
-    // ===== 渲染部位按钮 =====
+    // ===== 统一入口：切换部位（按钮 + SVG 都走这里） =====
+    function selectRegion(key) {
+      if (!BODY_REGIONS[key]) return;
+      currentRegionKey = key;
+      renderRegionButtons();
+      renderSymptomList();
+      updateCurrentRegionTitle();
+    }
+
+    // 暴露给 SVG 内联 onclick 使用
+    window.selectRegion = selectRegion;
+
+    // 渲染部位按钮
     function renderRegionButtons() {
       regionButtonsEl.innerHTML = "";
       Object.values(BODY_REGIONS).forEach((region) => {
@@ -379,10 +455,7 @@
         btn.className = "region-btn" + (region.key === currentRegionKey ? " active" : "");
         btn.textContent = region.label;
         btn.onclick = () => {
-          currentRegionKey = region.key;
-          renderRegionButtons();
-          renderSymptomList();
-          updateCurrentRegionTitle();
+          selectRegion(region.key);
         };
         regionButtonsEl.appendChild(btn);
       });
@@ -393,14 +466,12 @@
       currentRegionTitleEl.textContent = `当前部位：${region.label}（可多选症状）`;
     }
 
-    // 检查某个症状是否已经被选中
     function isSymptomSelected(regionKey, symptom) {
       return selectedSymptoms.some(
         (item) => item.regionKey === regionKey && item.symptom === symptom
       );
     }
 
-    // 切换选中/取消
     function toggleSymptom(regionKey, symptom) {
       const region = BODY_REGIONS[regionKey];
       const idx = selectedSymptoms.findIndex(
@@ -419,7 +490,6 @@
       renderSelectedSummary();
     }
 
-    // 渲染当前部位的症状列表（多选）
     function renderSymptomList() {
       const region = BODY_REGIONS[currentRegionKey];
       symptomListEl.innerHTML = "";
@@ -446,14 +516,12 @@
       symptomListEl.appendChild(container);
     }
 
-    // 渲染“当前已选择症状”汇总
     function renderSelectedSummary() {
       if (!selectedSymptoms.length) {
         selectedSummaryEl.textContent = "暂未选择任何症状。";
         return;
       }
 
-      // 按部位分组
       const byRegion = {};
       selectedSymptoms.forEach((item) => {
         if (!byRegion[item.regionLabel]) {
@@ -473,7 +541,6 @@
         .join("");
     }
 
-    // 渲染返回结果
     function renderAnalysisResult(r) {
       if (!analysisResultEl) return;
       if (!r) {
@@ -518,7 +585,6 @@
       analysisResultEl.innerHTML = html;
     }
 
-    // 点击 “生成辨证建议”
     async function handleAnalyze() {
       if (!selectedSymptoms.length) {
         alert("请至少选择 2 条症状再生成辨证建议。");
@@ -569,14 +635,10 @@
     analyzeBtn.addEventListener("click", handleAnalyze);
 
     // 初始化
-    renderRegionButtons();
-    updateCurrentRegionTitle();
-    renderSymptomList();
+    selectRegion("head"); // 会顺带渲染按钮、症状列表、标题
     renderSelectedSummary();
     renderAnalysisResult(null);
   </script>
 </body>
 </html>
-
-
 
