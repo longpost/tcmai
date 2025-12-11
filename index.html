@@ -1,36 +1,105 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <title>中医人体部位选择与辨证示例</title>
+  <meta charset="UTF-8" />
+  <title>中医症状选择与辨证示意</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      margin: 0;
-      padding: 16px;
-      display: flex;
-      gap: 16px;
+    :root {
+      --bg: #f5f5f7;
+      --card-bg: #ffffff;
+      --border: #e0e0e0;
+      --accent: #0077b6;
+      --accent-soft: rgba(0, 119, 182, 0.08);
+      --danger: #b00020;
+      --text-main: #222222;
+      --text-secondary: #555555;
+      --tag-bg: #f0f0f3;
+      --tag-selected-bg: #0077b6;
+      --tag-selected-text: #ffffff;
     }
 
-    .container {
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        "Helvetica Neue", Arial, "Noto Sans", "PingFang SC", "Microsoft YaHei",
+        sans-serif;
+      background: radial-gradient(circle at top, #ffffff, var(--bg));
+      color: var(--text-main);
       display: flex;
-      flex: 1;
+      flex-direction: row;
       gap: 16px;
-      flex-wrap: wrap;
+      min-height: 100vh;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+      border: 1px solid var(--border);
+      padding: 16px 18px;
     }
 
     .body-wrapper {
-      flex: 1;
-      min-width: 260px;
+      flex: 0 0 320px;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
+      gap: 12px;
+    }
+
+    .right-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    h1 {
+      font-size: 1.15rem;
+      margin: 0 0 4px;
+    }
+
+    h2 {
+      font-size: 1rem;
+      margin: 0 0 8px;
+    }
+
+    .body-region-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .region-btn {
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      padding: 4px 10px;
+      font-size: 0.8rem;
+      background: #fafafa;
+      cursor: pointer;
+      color: var(--text-secondary);
+      transition: all 0.15s ease;
+    }
+
+    .region-btn.active {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 600;
     }
 
     svg {
       width: 100%;
-      max-width: 380px;      /* 桌面上最多这么宽 */
-      min-width: 260px;      /* 再小也别小于这个 */
+      max-width: 380px;
+      min-width: 260px;
       height: auto;
       border: 1px solid #eee;
       border-radius: 12px;
@@ -38,557 +107,476 @@
       background: radial-gradient(circle at 50% 0%, #fdfdfd, #f3f3f3);
     }
 
-
-    /* 人体外轮廓线条 */
-    .body-outline {
-      fill: #fdfdfd;
-      stroke: #999;
-      stroke-width: 1.4;
+    .symptom-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
     }
 
-    /* 可点击区域 —— 默认透明，只在 hover / 选中时高亮 */
-    .region {
-      fill: transparent;
-      stroke: transparent;
-      stroke-width: 1;
+    .symptom-tag {
+      font-size: 0.82rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--tag-bg);
+      color: var(--text-secondary);
       cursor: pointer;
-      transition: fill 0.15s ease, stroke 0.15s ease;
+      user-select: none;
+      transition: all 0.12s ease;
+      white-space: nowrap;
     }
 
-    .region:hover {
-      fill: rgba(120, 170, 255, 0.30);
+    .symptom-tag.selected {
+      border-color: var(--accent);
+      background: var(--tag-selected-bg);
+      color: var(--tag-selected-text);
+      font-weight: 500;
     }
 
-    .region.active {
-      fill: rgba(0, 122, 255, 0.45);
-      stroke: #0051c8;
-      stroke-width: 1.2;
+    .summary-box {
+      font-size: 0.86rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
     }
 
-    .panel {
-      flex: 1;
-      min-width: 260px;
+    .summary-title {
+      font-weight: 600;
+      margin-bottom: 4px;
     }
 
-    .panel h2 {
-      margin-top: 0;
-      font-size: 18px;
+    .summary-item {
+      margin-bottom: 2px;
     }
 
-    .symptom-group {
-      margin-bottom: 12px;
-    }
-
-    .symptom-group h3 {
-      margin: 8px 0;
-      font-size: 16px;
-      border-bottom: 1px solid #eee;
-      padding-bottom: 4px;
-    }
-
-    label {
+    .btn-primary {
       display: inline-flex;
       align-items: center;
-      margin: 4px 8px 4px 0;
-      font-size: 14px;
+      justify-content: center;
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: none;
+      background: var(--accent);
+      color: #ffffff;
+      font-size: 0.9rem;
+      cursor: pointer;
+      margin-top: 6px;
+      transition: background 0.15s ease, box-shadow 0.15s ease,
+        transform 0.06s ease;
+      box-shadow: 0 4px 10px rgba(0, 119, 182, 0.25);
     }
 
-    label input {
-      margin-right: 4px;
+    .btn-primary:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 6px rgba(0, 119, 182, 0.25);
     }
 
-    .selected-summary {
-      margin-top: 16px;
-      padding: 8px;
-      border-radius: 8px;
-      background: #f7f7f7;
-      font-size: 14px;
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: wait;
+      box-shadow: none;
     }
 
-    @media (max-width: 768px) {
+    .result-box {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: var(--text-main);
+    }
+
+    .result-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .result-section {
+      margin-top: 4px;
+    }
+
+    .result-label {
+      font-weight: 600;
+    }
+
+    .result-warning {
+      margin-top: 6px;
+      color: var(--danger);
+    }
+
+    .ai-note {
+      margin-top: 8px;
+      padding-top: 6px;
+      border-top: 1px dashed #ddd;
+      font-size: 0.88rem;
+      color: #333333;
+    }
+
+    .ai-error {
+      margin-top: 4px;
+      color: var(--danger);
+      font-size: 0.85rem;
+    }
+
+    .hint {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    @media (max-width: 900px) {
       body {
         flex-direction: column;
       }
-    
+
       .body-wrapper {
         width: 100%;
         justify-content: center;
       }
     }
-
   </style>
 </head>
 <body>
-  <div class="container">
-    <!-- 左侧：人体 SVG 示意图 -->
-    <div class="body-wrapper">
-      <svg viewBox="0 0 200 480" aria-label="人体前视平面图">
+  <div class="body-wrapper card">
+    <h1>部位选择</h1>
+    <div class="body-region-buttons" id="regionButtons"></div>
 
-        <!-- 人体轮廓（只装饰，不可点击） -->
-        <path class="body-outline"
-          d="M100 28
-             C 88 28, 80 38, 80 52
-             C 80 68, 88 78, 100 78
-             C 112 78, 120 68, 120 52
-             C 120 38, 112 28, 100 28
-             Z
-
-             M90 78
-             L 90 96
-             C 76 104, 64 120, 60 140
-             L 54 174
-             C 50 194, 48 214, 50 232
-             L 56 270
-             C 60 300, 66 326, 70 352
-             L 74 392
-             C 76 408, 78 430, 80 446
-             L 86 466
-             L 96 466
-
-             M110 78
-             L 110 96
-             C 124 104, 136 120, 140 140
-             L 146 174
-             C 150 194, 152 214, 150 232
-             L 144 270
-             C 140 300, 134 326, 130 352
-             L 126 392
-             C 124 408, 122 430, 120 446
-             L 114 466
-             L 104 466
-
-             M80 100
-             L 64 104
-             C 54 110, 48 126, 48 146
-             L 48 182
-
-             M120 100
-             L 136 104
-             C 146 110, 152 126, 152 146
-             L 152 182
-
-             M48 182
-             C 44 204, 42 224, 44 244
-             L 48 268
-
-             M152 182
-             C 156 204, 158 224, 156 244
-             L 152 268" />
-
-        <!-- ↓↓↓ 可点击区域（透明，hover/选中时高亮） ↓↓↓ -->
-
-        <!-- 头部 -->
-        <path class="region" data-region="head"
-          d="M86 34
-             C 80 40, 78 48, 78 54
-             C 78 66, 86 74, 100 74
-             C 114 74, 122 66, 122 54
-             C 122 48, 120 40, 114 34
-             C 108 30, 92 30, 86 34
-             Z" />
-
-        <!-- 颈部 -->
-        <rect class="region" data-region="neck"
-          x="90" y="74" width="20" height="14" rx="4" />
-
-        <!-- 上胸（心肺区） -->
-        <path class="region" data-region="upper_chest"
-          d="M78 90
-             Q 100 84, 122 90
-             L 132 118
-             Q 100 124, 68 118
-             Z" />
-
-        <!-- 中胸（胸胁区） -->
-        <path class="region" data-region="mid_chest"
-          d="M72 118
-             Q 100 124, 128 118
-             L 134 140
-             Q 100 146, 66 140
-             Z" />
-
-        <!-- 上腹（胃脘） -->
-        <path class="region" data-region="upper_abdomen"
-          d="M70 140
-             Q 100 146, 130 140
-             L 136 166
-             Q 100 172, 64 166
-             Z" />
-
-        <!-- 中腹（肠区） -->
-        <path class="region" data-region="mid_abdomen"
-          d="M68 166
-             Q 100 172, 132 166
-             L 136 194
-             Q 100 202, 64 194
-             Z" />
-
-        <!-- 下腹 / 盆腔 -->
-        <path class="region" data-region="lower_abdomen"
-          d="M66 194
-             Q 100 202, 134 194
-             L 136 224
-             Q 100 234, 64 224
-             Z" />
-
-        <!-- 左肩 / 上臂 -->
-        <path class="region" data-region="left_shoulder_arm"
-          d="M78 92
-             L 60 98
-             C 52 104, 48 118, 48 134
-             L 48 162
-             Q 56 166, 64 166
-             L 66 136
-             Q 68 116, 74 98
-             Z" />
-
-        <!-- 右肩 / 上臂 -->
-        <path class="region" data-region="right_shoulder_arm"
-          d="M122 92
-             L 140 98
-             C 148 104, 152 118, 152 134
-             L 152 162
-             Q 144 166, 136 166
-             L 134 136
-             Q 132 116, 126 98
-             Z" />
-
-        <!-- 左前臂 / 手 -->
-        <path class="region" data-region="left_forearm_hand"
-          d="M48 162
-             C 44 182, 42 204, 44 226
-             L 46 248
-             Q 50 258, 58 260
-             L 62 242
-             C 60 224, 60 208, 64 196
-             Z" />
-
-        <!-- 右前臂 / 手 -->
-        <path class="region" data-region="right_forearm_hand"
-          d="M152 162
-             C 156 182, 158 204, 156 226
-             L 154 248
-             Q 150 258, 142 260
-             L 138 242
-             C 140 224, 140 208, 136 196
-             Z" />
-
-        <!-- 左大腿 -->
-        <path class="region" data-region="left_thigh"
-          d="M80 228
-             Q 74 250, 76 278
-             L 80 312
-             Q 86 320, 92 320
-             L 96 278
-             Q 94 252, 96 234
-             Z" />
-
-        <!-- 右大腿 -->
-        <path class="region" data-region="right_thigh"
-          d="M120 228
-             Q 126 250, 124 278
-             L 120 312
-             Q 114 320, 108 320
-             L 104 278
-             Q 106 252, 104 234
-             Z" />
-
-        <!-- 左小腿 / 足 -->
-        <path class="region" data-region="left_leg_foot"
-          d="M86 312
-             Q 82 338, 84 366
-             L 86 404
-             Q 88 420, 92 432
-             L 96 444
-             L 100 444
-             L 100 414
-             Q 98 378, 100 330
-             Z" />
-
-        <!-- 右小腿 / 足 -->
-        <path class="region" data-region="right_leg_foot"
-          d="M114 312
-             Q 118 338, 116 366
-             L 114 404
-             Q 112 420, 108 432
-             L 104 444
-             L 100 444
-             L 100 414
-             Q 102 378, 100 330
-             Z" />
-
-      </svg>
+    <!-- 人形简化示意图，可点击不同部位（目前点击逻辑在按钮上，图只是展示） -->
+    <svg viewBox="0 0 200 400" aria-label="人体平面示意图">
+      <!-- 头 -->
+      <circle cx="100" cy="50" r="25" fill="#fdfdfd" stroke="#ccc" />
+      <!-- 躯干 -->
+      <rect x="75" y="80" width="50" height="100" rx="20" fill="#fdfdfd" stroke="#ccc" />
+      <!-- 手臂 -->
+      <rect x="45" y="90" width="25" height="90" rx="12" fill="#fdfdfd" stroke="#ccc" />
+      <rect x="130" y="90" width="25" height="90" rx="12" fill="#fdfdfd" stroke="#ccc" />
+      <!-- 骨盆/下腹 -->
+      <rect x="80" y="180" width="40" height="40" rx="16" fill="#fdfdfd" stroke="#ccc" />
+      <!-- 双腿 -->
+      <rect x="80" y="220" width="16" height="80" rx="10" fill="#fdfdfd" stroke="#ccc" />
+      <rect x="104" y="220" width="16" height="80" rx="10" fill="#fdfdfd" stroke="#ccc" />
+    </svg>
+    <div class="hint">
+      提示：上面的人形图仅作示意，实际部位选择请使用上方按钮。
     </div>
+  </div>
 
-    <!-- 右侧：症状选择面板 + 调用后端结果 -->
-    <div class="panel">
-      <h2>部位症状选择</h2>
-      <p id="current-region-label">请点击左侧人体某个部位。</p>
-      <div id="symptom-container"></div>
-
-      <div class="selected-summary" id="selected-summary">
-        当前已选择症状：无
+  <div class="right-wrapper">
+    <div class="card">
+      <h1>症状多选（按部位）</h1>
+      <div id="currentRegionTitle" style="font-size:0.92rem;margin-bottom:4px;">
+        当前部位：
+      </div>
+      <div id="symptomList">
+        <!-- 动态填充 -->
       </div>
 
-      <!-- 生成辨证按钮 -->
-      <button id="analyze-btn" style="margin-top:12px;padding:6px 12px;border-radius:6px;border:1px solid #ccc;background:#f0f0f0;cursor:pointer;">
+      <div class="summary-box" style="margin-top:10px;">
+        <div class="summary-title">当前已选择症状：</div>
+        <div id="selectedSummary">暂未选择任何症状。</div>
+      </div>
+
+      <button id="analyzeBtn" class="btn-primary">
         生成辨证建议（从后端）
       </button>
+      <div class="hint">
+        温馨提示：此工具仅用于中医理论学习和示意，不用于真实诊断或处方。
+      </div>
+    </div>
 
-      <!-- 辨证结果显示区 -->
-      <div id="analysis-result" style="margin-top:12px;padding:10px;border-radius:8px;border:1px solid #eee;background:#fafafa;font-size:14px;line-height:1.5;"></div>
+    <div class="card">
+      <h2>辨证结果示意</h2>
+      <div id="analysisResult" class="result-box">
+        请选择多个症状后，点击“生成辨证建议”查看示意性分析。
+      </div>
     </div>
   </div>
 
   <script>
-    // 前端症状列表
-    const symptomOptions = {
-      head: ["头痛", "偏头痛", "头晕", "头重如裹", "头胀痛", "眩晕"],
-      neck: ["颈项强痛", "落枕样不利", "颈部酸胀", "咽喉不适", "吞咽不利"],
-      upper_chest: ["胸闷", "心前区刺痛", "心悸", "心慌易惊", "气短懒言", "咳嗽"],
-      mid_chest: ["胸胁胀痛", "叹息频作", "肋下隐痛", "呼吸不畅"],
-      upper_abdomen: ["胃脘胀痛", "胃脘隐痛", "嗳气", "反酸", "胃纳不佳", "饱胀不舒"],
-      mid_abdomen: ["腹胀", "腹痛喜按", "腹痛拒按", "肠鸣", "大便不爽"],
-      lower_abdomen: ["小腹坠胀", "小腹冷痛", "痛经", "经行腹痛", "尿频", "尿急", "尿痛"],
-      left_shoulder_arm: ["左肩痛", "左臂酸胀", "上肢麻木", "抬举费力"],
-      right_shoulder_arm: ["右肩痛", "右臂酸胀", "上肢麻木", "抬举费力"],
-      left_forearm_hand: ["左前臂酸痛", "手指麻木", "握物无力", "手冷"],
-      right_forearm_hand: ["右前臂酸痛", "手指麻木", "握物无力", "手冷"],
-      left_thigh: ["左大腿酸痛", "乏力", "放射样痛", "麻木"],
-      right_thigh: ["右大腿酸痛", "乏力", "放射样痛", "麻木"],
-      left_leg_foot: ["左小腿酸胀", "膝关节痛", "小腿抽筋", "下肢浮肿", "足冷"],
-      right_leg_foot: ["右小腿酸胀", "膝关节痛", "小腿抽筋", "下肢浮肿", "足冷"]
+    // ===== 1. 配置：后端 API 地址（你自己改成实际域名） =====
+    // 比如：const API_URL = "https://tcmai-api-git-main-longposts-projects.vercel.app/api/analyze";
+    const API_URL = "https://tcmai-api.vercel.app/api/analyze"; // 占位，你自己改
+
+    // ===== 2. 前端定义各部位及常用症状（名称要尽量和后端 TCM_SYMPTOM_FEATURES 对上） =====
+    const BODY_REGIONS = {
+      head: {
+        key: "head",
+        label: "头部",
+        symptoms: ["头晕", "头痛", "偏头痛", "头重如裹", "眩晕", "耳鸣", "失眠", "多梦"]
+      },
+      chest: {
+        key: "chest",
+        label: "胸部 / 心肺",
+        symptoms: ["胸闷", "心悸", "气短懒言", "咳嗽", "痰多", "痰黄黏", "痰白清稀", "胸痛"]
+      },
+      upperAbd: {
+        key: "upperAbd",
+        label: "上腹 / 胃脘",
+        symptoms: ["胃脘胀痛", "胃脘灼痛", "嗳气", "反酸", "纳呆", "口黏不渴", "口渴喜冷饮", "口渴不多饮"]
+      },
+      midAbd: {
+        key: "midAbd",
+        label: "中腹",
+        symptoms: ["腹胀", "腹痛"]
+      },
+      lowerAbd: {
+        key: "lowerAbd",
+        label: "下腹 / 小腹 / 月经",
+        symptoms: [
+          "小腹坠胀",
+          "小腹冷痛",
+          "经行腹痛",
+          "经量少",
+          "经色紫暗有块"
+        ]
+      },
+      stool: {
+        key: "stool",
+        label: "大便",
+        symptoms: ["便溏", "大便干结"]
+      },
+      urine: {
+        key: "urine",
+        label: "小便",
+        symptoms: ["小便短赤", "小便清长"]
+      },
+      whole: {
+        key: "whole",
+        label: "全身 / 体质",
+        symptoms: [
+          "乏力",
+          "神疲懒言",
+          "自汗",
+          "盗汗",
+          "畏寒肢冷",
+          "手足心热",
+          "面色少华",
+          "面色潮红",
+          "四肢沉重",
+          "肢体麻木",
+          "水肿",
+          "易怒",
+          "烦躁"
+        ]
+      }
     };
 
-    const regionLabels = {
-      head: "头部",
-      neck: "颈部",
-      upper_chest: "上胸（心肺区）",
-      mid_chest: "中胸 / 胸胁",
-      upper_abdomen: "上腹（胃脘）",
-      mid_abdomen: "中腹（肠区）",
-      lower_abdomen: "下腹 / 盆腔",
-      left_shoulder_arm: "左肩 / 上臂",
-      right_shoulder_arm: "右肩 / 上臂",
-      left_forearm_hand: "左前臂 / 手",
-      right_forearm_hand: "右前臂 / 手",
-      left_thigh: "左大腿",
-      right_thigh: "右大腿",
-      left_leg_foot: "左小腿 / 足",
-      right_leg_foot: "右小腿 / 足"
-    };
+    // 当前选中的部位 key
+    let currentRegionKey = "head";
 
-    const selectedSymptoms = {};
-    const regions = document.querySelectorAll('.region');
-    const symptomContainer = document.getElementById('symptom-container');
-    const currentRegionLabel = document.getElementById('current-region-label');
-    const selectedSummary = document.getElementById('selected-summary');
+    // 所有已选症状：[{regionKey, regionLabel, symptom}]
+    let selectedSymptoms = [];
 
-    let currentRegion = null;
+    const regionButtonsEl = document.getElementById("regionButtons");
+    const symptomListEl = document.getElementById("symptomList");
+    const selectedSummaryEl = document.getElementById("selectedSummary");
+    const currentRegionTitleEl = document.getElementById("currentRegionTitle");
+    const analyzeBtn = document.getElementById("analyzeBtn");
+    const analysisResultEl = document.getElementById("analysisResult");
 
-    // 点击人体区域 => 高亮 + 显示该区域症状列表
-    regions.forEach(region => {
-      region.addEventListener('click', () => {
-        const key = region.dataset.region;
-        currentRegion = key;
-
-        regions.forEach(r => r.classList.remove('active'));
-        region.classList.add('active');
-
-        const label = regionLabels[key] || key;
-        currentRegionLabel.textContent = `当前部位：${label}（请勾选症状）`;
-
-        renderSymptomsForRegion(key);
+    // ===== 渲染部位按钮 =====
+    function renderRegionButtons() {
+      regionButtonsEl.innerHTML = "";
+      Object.values(BODY_REGIONS).forEach((region) => {
+        const btn = document.createElement("button");
+        btn.className = "region-btn" + (region.key === currentRegionKey ? " active" : "");
+        btn.textContent = region.label;
+        btn.onclick = () => {
+          currentRegionKey = region.key;
+          renderRegionButtons();
+          renderSymptomList();
+          updateCurrentRegionTitle();
+        };
+        regionButtonsEl.appendChild(btn);
       });
-    });
+    }
 
-    function renderSymptomsForRegion(regionKey) {
-      const options = symptomOptions[regionKey] || [];
-      symptomContainer.innerHTML = "";
+    function updateCurrentRegionTitle() {
+      const region = BODY_REGIONS[currentRegionKey];
+      currentRegionTitleEl.textContent = `当前部位：${region.label}（可多选症状）`;
+    }
 
-      if (options.length === 0) {
-        symptomContainer.textContent = "该部位暂未设置症状选项。";
+    // 检查某个症状是否已经被选中
+    function isSymptomSelected(regionKey, symptom) {
+      return selectedSymptoms.some(
+        (item) => item.regionKey === regionKey && item.symptom === symptom
+      );
+    }
+
+    // 切换选中/取消
+    function toggleSymptom(regionKey, symptom) {
+      const region = BODY_REGIONS[regionKey];
+      const idx = selectedSymptoms.findIndex(
+        (item) => item.regionKey === regionKey && item.symptom === symptom
+      );
+      if (idx >= 0) {
+        selectedSymptoms.splice(idx, 1);
+      } else {
+        selectedSymptoms.push({
+          regionKey,
+          regionLabel: region.label,
+          symptom
+        });
+      }
+      renderSymptomList();
+      renderSelectedSummary();
+    }
+
+    // 渲染当前部位的症状列表（多选）
+    function renderSymptomList() {
+      const region = BODY_REGIONS[currentRegionKey];
+      symptomListEl.innerHTML = "";
+      const label = document.createElement("div");
+      label.textContent = `${region.label}相关症状（可多选）：`;
+      label.style.fontSize = "0.9rem";
+      label.style.marginBottom = "4px";
+      symptomListEl.appendChild(label);
+
+      const container = document.createElement("div");
+      container.className = "symptom-tags";
+
+      region.symptoms.forEach((symptom) => {
+        const tag = document.createElement("button");
+        tag.type = "button";
+        tag.className =
+          "symptom-tag" +
+          (isSymptomSelected(region.key, symptom) ? " selected" : "");
+        tag.textContent = symptom;
+        tag.onclick = () => toggleSymptom(region.key, symptom);
+        container.appendChild(tag);
+      });
+
+      symptomListEl.appendChild(container);
+    }
+
+    // 渲染“当前已选择症状”汇总
+    function renderSelectedSummary() {
+      if (!selectedSymptoms.length) {
+        selectedSummaryEl.textContent = "暂未选择任何症状。";
         return;
       }
 
-      const wrapper = document.createElement('div');
-      wrapper.className = 'symptom-group';
-
-      const title = document.createElement('h3');
-      title.textContent = regionLabels[regionKey] + "相关症状";
-      wrapper.appendChild(title);
-
-      if (!selectedSymptoms[regionKey]) {
-        selectedSymptoms[regionKey] = new Set();
-      }
-
-      options.forEach(sym => {
-        const label = document.createElement('label');
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.value = sym;
-
-        if (selectedSymptoms[regionKey].has(sym)) {
-          checkbox.checked = true;
+      // 按部位分组
+      const byRegion = {};
+      selectedSymptoms.forEach((item) => {
+        if (!byRegion[item.regionLabel]) {
+          byRegion[item.regionLabel] = [];
         }
-
-        checkbox.addEventListener('change', () => {
-          if (checkbox.checked) {
-            selectedSymptoms[regionKey].add(sym);
-          } else {
-            selectedSymptoms[regionKey].delete(sym);
-          }
-          updateSelectedSummary();
-        });
-
-        label.appendChild(checkbox);
-        label.appendChild(document.createTextNode(sym));
-        wrapper.appendChild(label);
+        byRegion[item.regionLabel].push(item.symptom);
       });
 
-      symptomContainer.appendChild(wrapper);
-    }
-
-    function updateSelectedSummary() {
-      const parts = [];
-
-      Object.keys(selectedSymptoms).forEach(regionKey => {
-        const set = selectedSymptoms[regionKey];
-        if (set && set.size > 0) {
-          const label = regionLabels[regionKey] || regionKey;
-          parts.push(label + "：" + Array.from(set).join("，"));
-        }
+      const lines = [];
+      Object.keys(byRegion).forEach((label) => {
+        const list = Array.from(new Set(byRegion[label]));
+        lines.push(`${label}：${list.join("、")}`);
       });
 
-      if (parts.length === 0) {
-        selectedSummary.textContent = "当前已选择症状：无";
-      } else {
-        selectedSummary.textContent = "当前已选择症状：" + parts.join("；");
-      }
+      selectedSummaryEl.innerHTML = lines
+        .map((line) => `<div class="summary-item">${line}</div>`)
+        .join("");
     }
 
-    // ====== 新增：调用后端 API 做辨证 ======
+    // 渲染返回结果
+    function renderAnalysisResult(r) {
+      if (!analysisResultEl) return;
+      if (!r) {
+        analysisResultEl.textContent =
+          "请选择多个症状后，点击“生成辨证建议”查看示意性分析。";
+        return;
+      }
 
-    const analyzeBtn = document.getElementById("analyze-btn");
-    const analysisResult = document.getElementById("analysis-result");
+      let html = "";
 
-    // 如果你的 vercel 域名不是这个，把下面这行改成你的实际地址
-    const API_URL = "https://tcmai-api.vercel.app/api/analyze";
+      if (r.title) {
+        html += `<div class="result-title">${r.title}</div>`;
+      }
+      if (r.pattern) {
+        html += `<div class="result-section"><span class="result-label">可能相关证素方向（示意）：</span>${r.pattern}</div>`;
+      }
+      if (r.explanation) {
+        html += `<div class="result-section"><span class="result-label">系统辨证思路：</span>${r.explanation}</div>`;
+      }
+      if (r.principle) {
+        html += `<div class="result-section"><span class="result-label">治法思路（学习用）：</span>${r.principle}</div>`;
+      }
+      if (r.acupuncture) {
+        html += `<div class="result-section"><span class="result-label">针灸取穴思路：</span>${r.acupuncture}</div>`;
+      }
+      if (r.herbal) {
+        html += `<div class="result-section"><span class="result-label">中药方药思路：</span>${r.herbal}</div>`;
+      }
 
-    if (analyzeBtn) {
-      analyzeBtn.addEventListener("click", async () => {
-        const all = collectSelectedSymptoms();
+      if (r.aiNotes) {
+        html += `<div class="ai-note"><span class="result-label">中医师口吻解释（AI）：</span>${r.aiNotes}</div>`;
+      }
 
-        if (!all || all.length === 0) {
-          renderAnalysisResult({
-            title: "没有选择任何症状",
-            pattern: "——",
-            explanation: "请先在左侧选择一个或多个部位，并勾选相关症状。",
-            principle: "",
-            acupuncture: "",
-            herbal: "",
-            warning: "本工具仅用于中医学习示例，不能替代临床问诊和医师诊断。"
-          });
-          return;
-        }
+      if (r.aiError) {
+        html += `<div class="ai-error"><span class="result-label">AI 提示：</span>${r.aiError}</div>`;
+      }
 
-        renderAnalysisResult({
-          title: "正在分析……",
-          pattern: "",
-          explanation: "已将所选症状发送到后端接口，请稍候。",
-          principle: "",
-          acupuncture: "",
-          herbal: "",
-          warning: ""
+      if (r.warning) {
+        html += `<div class="result-warning">${r.warning}</div>`;
+      }
+
+      analysisResultEl.innerHTML = html;
+    }
+
+    // 点击 “生成辨证建议”
+    async function handleAnalyze() {
+      if (!selectedSymptoms.length) {
+        alert("请至少选择 2 条症状再生成辨证建议。");
+        return;
+      }
+      analyzeBtn.disabled = true;
+      analyzeBtn.textContent = "正在向后端请求…";
+
+      try {
+        const payload = {
+          symptoms: selectedSymptoms.map((s) => ({
+            region: s.regionLabel,
+            symptom: s.symptom
+          }))
+        };
+
+        const resp = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
         });
 
-        try {
-          const resp = await fetch(API_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ symptoms: all })
-          });
-
-          const data = await resp.json();
-          renderAnalysisResult(data);
-        } catch (err) {
+        if (!resp.ok) {
+          const text = await resp.text();
           renderAnalysisResult({
             title: "请求失败",
-            pattern: "——",
-            explanation: "与后端通信出错，请稍后重试或检查接口配置。",
-            principle: "",
-            acupuncture: "",
-            herbal: "",
-            warning: String(err)
+            explanation: "后端返回了错误状态码，请检查接口是否可用。",
+            warning: `HTTP 状态：${resp.status}，返回内容：${text}`
           });
+        } else {
+          const data = await resp.json();
+          renderAnalysisResult(data);
         }
-      });
-    }
-
-    // 把 selectedSymptoms 变成 [{ region, symptom }, ...]
-    function collectSelectedSymptoms() {
-      const list = [];
-      Object.keys(selectedSymptoms).forEach(regionKey => {
-        const set = selectedSymptoms[regionKey];
-        if (!set || set.size === 0) return;
-        set.forEach(sym => {
-          list.push({ region: regionKey, symptom: sym });
+      } catch (err) {
+        renderAnalysisResult({
+          title: "请求失败",
+          explanation: "与后端通信出错，请稍后重试或检查接口地址是否正确。",
+          warning: `错误信息：${err && err.message ? err.message : String(
+            err
+          )}`
         });
-      });
-      return list;
+      } finally {
+        analyzeBtn.disabled = false;
+        analyzeBtn.textContent = "生成辨证建议（从后端）";
+      }
     }
 
-    // 把后端返回的 result 渲染到页面
+    analyzeBtn.addEventListener("click", handleAnalyze);
 
-    function renderAnalysisResult(r) {
-    if (!analysisResult) return;
-    if (!r) {
-      analysisResult.innerHTML = "";
-      return;
-    }
-  
-    let html = "";
-  
-    if (r.title) {
-      html += `<strong>${r.title}</strong><br/>`;
-    }
-    if (r.pattern) {
-      html += `<div style="margin-top:6px;"><strong>可能相关证候（示例）：</strong>${r.pattern}</div>`;
-    }
-    if (r.explanation) {
-      html += `<div style="margin-top:6px;"><strong>辨证思路：</strong>${r.explanation}</div>`;
-    }
-    if (r.principle) {
-      html += `<div style="margin-top:6px;"><strong>治法思路：</strong>${r.principle}</div>`;
-    }
-    if (r.acupuncture) {
-      html += `<div style="margin-top:6px;"><strong>针灸取穴参考：</strong>${r.acupuncture}</div>`;
-    }
-    if (r.herbal) {
-      html += `<div style="margin-top:6px;"><strong>中药方药思路：</strong>${r.herbal}</div>`;
-    }
-  
-    // 新增：AI 学习说明
-    if (r.aiNotes) {
-      html += `<div style="margin-top:10px;padding-top:8px;border-top:1px dashed #ddd;">
-        <strong>AI 学习说明：</strong>${r.aiNotes}
-      </div>`;
-    }
-  
-    // 新增：AI 出错信息
-    if (r.aiError) {
-      html += `<div style="margin-top:6px;color:#b00000;"><strong>AI 提示：</strong>${r.aiError}</div>`;
-    }
-  
-    if (r.warning) {
-      html += `<div style="margin-top:8px;color:#b00000;"><strong>重要提示：</strong>${r.warning}</div>`;
-    }
-  
-    analysisResult.innerHTML = html;
-  }
-
+    // 初始化
+    renderRegionButtons();
+    updateCurrentRegionTitle();
+    renderSymptomList();
+    renderSelectedSummary();
+    renderAnalysisResult(null);
   </script>
 </body>
 </html>
+
 
 
