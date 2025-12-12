@@ -2,94 +2,141 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <title>中医人体点选预览</title>
+  <title>中医人体点选预览（优化版）</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
-        "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-      background: #f3f4f6;
+    :root{
+      --bg:#f3f4f6;
+      --card:#fafafa;
+      --card2:#ffffff;
+      --text:#111827;
+      --muted:#6b7280;
+
+      --base:#e5e7eb;
+      --hover:#93c5fd;
+      --active:#2563eb;
+
+      --outline: rgba(17,24,39,0.22);
+      --shadow: 0 4px 16px rgba(0,0,0,0.08);
+      --radius: 16px;
     }
 
-    .app {
-      max-width: 900px;
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+
+    .app{
+      max-width: 980px;
       margin: 24px auto;
       padding: 16px;
-      display: grid;
-      grid-template-columns: 1fr 260px;
+      display:grid;
+      grid-template-columns: 1fr 280px;
       gap: 16px;
     }
 
-    .card {
-      background: #fafafa;
-      border-radius: 16px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    .card{
+      background:var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
       padding: 12px;
     }
 
-    .toolbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
+    .card.white{
+      background: var(--card2);
     }
 
-    .btn {
-      padding: 6px 12px;
+    .toolbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom: 10px;
+      gap: 10px;
+    }
+
+    .btns{ display:flex; gap:8px; }
+
+    .btn{
+      padding: 7px 12px;
       border-radius: 999px;
       border: 1px solid #e5e7eb;
-      background: white;
-      cursor: pointer;
-      font-weight: 600;
+      background: #fff;
+      cursor:pointer;
+      font-weight: 650;
+      font-size: 13px;
     }
 
-    .btn.active {
+    .btn.active{
       background: rgba(37,99,235,0.12);
       color: #1e40af;
+      border-color: rgba(147,197,253,0.9);
     }
 
-    svg path.region {
-      fill: #e5e7eb;
+    .hint{
+      font-size: 13px;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .stage{
+      background: #fafafa;
+      border-radius: var(--radius);
+      padding: 10px;
+    }
+
+    /* 关键：不要只写 path！写 svg 里所有 .region */
+    svg .region{
+      fill: var(--base);
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.18s ease-out;
+    }
+    svg .region:hover{
+      fill: var(--hover);
+    }
+    svg .region.active{
+      fill: var(--active);
     }
 
-    svg path.region:hover {
-      fill: #93c5fd;
+    .outline{
+      fill: none;
+      stroke: var(--outline);
+      stroke-width: 2;
     }
 
-    svg path.region.active {
-      fill: #2563eb;
+    .list{
+      display:grid;
+      gap:6px;
+      max-height: 580px;
+      overflow:auto;
+      padding-right: 2px;
     }
 
-    .list {
-      display: grid;
-      gap: 6px;
-      max-height: 520px;
-      overflow: auto;
-    }
-
-    .list button {
-      text-align: left;
-      padding: 8px 10px;
+    .list button{
+      text-align:left;
+      padding: 9px 10px;
       border-radius: 12px;
       border: 1px solid #e5e7eb;
-      background: white;
-      cursor: pointer;
+      background: #fff;
+      cursor:pointer;
       font-size: 13px;
     }
 
-    .list button.active {
+    .list button.active{
       background: rgba(37,99,235,0.12);
-      border-color: #93c5fd;
-      color: #1e40af;
-      font-weight: 600;
+      border-color: rgba(147,197,253,0.9);
+      color:#1e40af;
+      font-weight: 650;
     }
 
-    .hint {
-      font-size: 13px;
-      color: #6b7280;
+    .small{
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.35;
+      margin-top: 8px;
     }
   </style>
 </head>
@@ -99,120 +146,329 @@
   <!-- 左：人体 -->
   <div class="card">
     <div class="toolbar">
-      <div>
-        <button class="btn active" onclick="switchSide('front')" id="btn-front">正面</button>
-        <button class="btn" onclick="switchSide('back')" id="btn-back">背面</button>
+      <div class="btns">
+        <button class="btn active" id="btn-front" onclick="switchSide('front')">正面</button>
+        <button class="btn" id="btn-back" onclick="switchSide('back')">背面</button>
       </div>
       <div class="hint" id="status">点选人体部位</div>
     </div>
 
-    <!-- SVG 容器 -->
-    <div id="svg-container"></div>
+    <div class="stage" id="svg-container"></div>
+
+    <div class="small">
+      提示：鼠标悬停会高亮；点击后会锁定选中。右侧列表也能点选联动。
+    </div>
   </div>
 
   <!-- 右：列表 -->
-  <div class="card">
-    <div style="font-weight:700;margin-bottom:8px;">部位列表</div>
+  <div class="card white">
+    <div style="font-weight:800;margin-bottom:8px;">部位列表</div>
     <div class="list" id="region-list"></div>
   </div>
 </div>
 
 <script>
-  const regions = {
+  const REGIONS = {
     front: [
-      ["head","头面"],
-      ["neck","颈项"],
-      ["chest","胸"],
-      ["epigastrium","胃脘"],
-      ["abdomen","腹"],
-      ["pelvis","小腹"],
-      ["l_thigh","左大腿"],
-      ["r_thigh","右大腿"],
-      ["l_knee","左膝"],
-      ["r_knee","右膝"],
-      ["l_foot","左足"],
-      ["r_foot","右足"]
+      ["front_head","头面"],
+      ["front_neck","颈项"],
+      ["front_left_shoulder","左肩"],
+      ["front_right_shoulder","右肩"],
+      ["front_left_arm","左臂"],
+      ["front_right_arm","右臂"],
+      ["front_left_hand","左手"],
+      ["front_right_hand","右手"],
+      ["front_chest","胸"],
+      ["front_epigastrium","胃脘"],
+      ["front_abdomen","腹"],
+      ["front_pelvis","小腹/骨盆"],
+      ["front_left_thigh","左大腿"],
+      ["front_right_thigh","右大腿"],
+      ["front_left_knee","左膝"],
+      ["front_right_knee","右膝"],
+      ["front_left_shin","左小腿"],
+      ["front_right_shin","右小腿"],
+      ["front_left_foot","左足"],
+      ["front_right_foot","右足"],
     ],
     back: [
-      ["head","后头"],
-      ["neck","后颈"],
-      ["upper_back","上背"],
-      ["mid_back","中背"],
-      ["low_back","腰"],
-      ["hip","骶/臀"],
-      ["l_thigh","左大腿后"],
-      ["r_thigh","右大腿后"],
-      ["l_knee","左膝后"],
-      ["r_knee","右膝后"],
-      ["l_foot","左足后"],
-      ["r_foot","右足后"]
-    ]
+      ["back_head","后头"],
+      ["back_neck","后颈"],
+      ["back_left_shoulder","左肩后"],
+      ["back_right_shoulder","右肩后"],
+      ["back_left_arm","左臂后"],
+      ["back_right_arm","右臂后"],
+      ["back_left_hand","左手后"],
+      ["back_right_hand","右手后"],
+      ["back_upper_back","上背"],
+      ["back_mid_back","中背"],
+      ["back_low_back","腰"],
+      ["back_sacrum","骶/臀"],
+      ["back_left_thigh","左大腿后"],
+      ["back_right_thigh","右大腿后"],
+      ["back_left_knee","左膝后"],
+      ["back_right_knee","右膝后"],
+      ["back_left_calf","左小腿后"],
+      ["back_right_calf","右小腿后"],
+      ["back_left_foot","左足后"],
+      ["back_right_foot","右足后"],
+    ],
   };
 
   let side = "front";
-  let active = null;
+  let activeId = null;
 
-  function switchSide(s) {
+  function switchSide(s){
     side = s;
-    active = null;
+    activeId = null;
     document.getElementById("btn-front").classList.toggle("active", s==="front");
     document.getElementById("btn-back").classList.toggle("active", s==="back");
+    document.getElementById("status").innerText = "点选人体部位";
     render();
   }
 
-  function selectRegion(id, label) {
-    active = id;
-    document.getElementById("status").innerText =
-      (side === "front" ? "正面" : "背面") + " · " + label;
-    render();
+  function pick(id){
+    activeId = id;
+    const label = (REGIONS[side].find(x => x[0]===id) || [id,id])[1];
+    document.getElementById("status").innerText = (side==="front"?"正面":"背面") + " · " + label;
+    renderActive();
+    renderList();
   }
 
-  function render() {
-    // SVG（极简示意，商业轮廓感）
-    const svg = `
-    <svg viewBox="0 0 200 520" width="100%">
-      <path d="M100 20 C75 20 65 40 65 60 C65 85 85 100 100 100 C115 100 135 85 135 60 C135 40 125 20 100 20 Z"
-        class="region ${active==='head'?'active':''}"
-        onclick="selectRegion('head','头')" />
+  function renderActive(){
+    document.querySelectorAll("#svg-container .region").forEach(el=>{
+      el.classList.toggle("active", el.id === activeId);
+    });
+  }
 
-      <rect x="85" y="100" width="30" height="25"
-        class="region ${active==='neck'?'active':''}"
-        onclick="selectRegion('neck','颈')" />
-
-      <rect x="70" y="125" width="60" height="60"
-        class="region ${active==='chest'?'active':''}"
-        onclick="selectRegion('chest','胸')" />
-
-      <rect x="75" y="185" width="50" height="55"
-        class="region ${active==='epigastrium'?'active':''}"
-        onclick="selectRegion('epigastrium','胃脘')" />
-
-      <rect x="75" y="240" width="50" height="70"
-        class="region ${active==='abdomen'?'active':''}"
-        onclick="selectRegion('abdomen','腹')" />
-
-      <rect x="75" y="310" width="50" height="60"
-        class="region ${active==='pelvis'?'active':''}"
-        onclick="selectRegion('pelvis','小腹')" />
-
-      <rect x="65" y="370" width="30" height="90"
-        class="region ${active==='l_thigh'?'active':''}"
-        onclick="selectRegion('l_thigh','左腿')" />
-
-      <rect x="105" y="370" width="30" height="90"
-        class="region ${active==='r_thigh'?'active':''}"
-        onclick="selectRegion('r_thigh','右腿')" />
-    </svg>`;
-    document.getElementById("svg-container").innerHTML = svg;
-
-    // 列表
-    const list = regions[side].map(([id,label]) => `
-      <button class="${active===id?'active':''}"
-        onclick="selectRegion('${id}','${label}')">
-        ${label}
-      </button>
-    `).join("");
+  function renderList(){
+    const list = REGIONS[side].map(([id,label]) => {
+      const cls = (id===activeId) ? "active" : "";
+      return `<button class="${cls}" onclick="pick('${id}')">${label}</button>`;
+    }).join("");
     document.getElementById("region-list").innerHTML = list;
+  }
+
+  function render(){
+    document.getElementById("svg-container").innerHTML = (side==="front") ? frontSVG() : backSVG();
+
+    // 点击事件：SVG 内部直接绑定也可以，这里用事件代理更稳
+    document.querySelectorAll("#svg-container .region").forEach(el=>{
+      el.addEventListener("click", ()=> pick(el.id));
+    });
+
+    renderActive();
+    renderList();
+  }
+
+  function frontSVG(){
+    return `
+    <svg viewBox="0 0 240 560" width="100%" aria-label="TCM body map front">
+      <path class="outline"
+        d="M120 18
+           C98 18 84 34 84 56
+           C84 74 94 88 107 92
+           L107 106
+           C92 111 76 124 70 142
+           L56 188
+           C54 196 55 206 62 210
+           L70 214
+           L68 246
+           C66 262 62 290 60 306
+           C58 326 64 344 76 354
+           L86 362
+           L86 424
+           C86 446 78 468 70 494
+           L64 516
+           C62 522 64 528 70 530
+           L92 538
+           C98 540 104 536 106 530
+           L114 504
+           L126 504
+           L134 530
+           C136 536 142 540 148 538
+           L170 530
+           C176 528 178 522 176 516
+           L170 494
+           C162 468 154 446 154 424
+           L154 362
+           L164 354
+           C176 344 182 326 180 306
+           C178 290 174 262 172 246
+           L170 214
+           L178 210
+           C185 206 186 196 184 188
+           L170 142
+           C164 124 148 111 133 106
+           L133 92
+           C146 88 156 74 156 56
+           C156 34 142 18 120 18 Z" />
+
+      <path id="front_head" class="region"
+        d="M120 22 C102 22 90 36 90 56 C90 76 102 90 120 90 C138 90 150 76 150 56 C150 36 138 22 120 22 Z" />
+      <path id="front_neck" class="region"
+        d="M106 90 L134 90 L134 112 C134 118 106 118 106 112 Z" />
+
+      <path id="front_left_shoulder" class="region"
+        d="M106 112 C92 114 80 124 74 138 L64 164 L90 176 C94 160 98 144 106 136 Z" />
+      <path id="front_right_shoulder" class="region"
+        d="M134 112 C148 114 160 124 166 138 L176 164 L150 176 C146 160 142 144 134 136 Z" />
+
+      <path id="front_left_arm" class="region"
+        d="M64 164 L52 206 C50 212 52 218 58 222 L72 232 L84 192 Z" />
+      <path id="front_right_arm" class="region"
+        d="M176 164 L188 206 C190 212 188 218 182 222 L168 232 L156 192 Z" />
+
+      <path id="front_left_hand" class="region"
+        d="M58 222 C50 228 50 240 58 246 L78 260 C86 266 94 256 90 246 L72 232 Z" />
+      <path id="front_right_hand" class="region"
+        d="M182 222 C190 228 190 240 182 246 L162 260 C154 266 146 256 150 246 L168 232 Z" />
+
+      <path id="front_chest" class="region"
+        d="M90 132 C98 122 110 118 120 118 C130 118 142 122 150 132
+           C152 148 148 162 140 172 C134 180 126 184 120 184
+           C114 184 106 180 100 172 C92 162 88 148 90 132 Z" />
+
+      <path id="front_epigastrium" class="region"
+        d="M100 184 L140 184 C144 204 142 218 136 232
+           C132 240 126 244 120 244 C114 244 108 240 104 232
+           C98 218 96 204 100 184 Z" />
+
+      <path id="front_abdomen" class="region"
+        d="M104 244 L136 244 C140 268 138 290 132 310
+           C128 324 124 330 120 330 C116 330 112 324 108 310
+           C102 290 100 268 104 244 Z" />
+
+      <path id="front_pelvis" class="region"
+        d="M108 330 L132 330 C138 350 140 370 136 388
+           C132 402 126 410 120 410 C114 410 108 402 104 388
+           C100 370 102 350 108 330 Z" />
+
+      <path id="front_left_thigh" class="region"
+        d="M104 388 L118 388 L118 450 C118 470 112 494 106 510
+           L86 504 L92 482 C98 460 104 440 104 420 Z" />
+      <path id="front_right_thigh" class="region"
+        d="M122 388 L136 388 L136 420 C136 440 142 460 148 482
+           L154 504 L134 510 C128 494 122 470 122 450 Z" />
+
+      <path id="front_left_knee" class="region" d="M104 420 L118 420 L118 446 L104 446 Z" />
+      <path id="front_right_knee" class="region" d="M122 420 L136 420 L136 446 L122 446 Z" />
+
+      <path id="front_left_shin" class="region"
+        d="M104 446 L118 446 C118 468 112 488 106 510 L94 506 C98 488 104 468 104 446 Z" />
+      <path id="front_right_shin" class="region"
+        d="M122 446 L136 446 C136 468 142 488 146 506 L134 510 C128 488 122 468 122 446 Z" />
+
+      <path id="front_left_foot" class="region"
+        d="M86 504 L110 512 C112 528 96 538 84 534 L68 528 C62 526 62 518 66 514 Z" />
+      <path id="front_right_foot" class="region"
+        d="M154 504 L174 514 C178 518 178 526 172 528 L156 534 C144 538 128 528 130 512 Z" />
+    </svg>`;
+  }
+
+  function backSVG(){
+    return `
+    <svg viewBox="0 0 240 560" width="100%" aria-label="TCM body map back">
+      <path class="outline"
+        d="M120 18
+           C98 18 84 34 84 56
+           C84 74 94 88 107 92
+           L107 106
+           C92 111 76 124 70 142
+           L56 188
+           C54 196 55 206 62 210
+           L70 214
+           L68 246
+           C66 262 62 290 60 306
+           C58 326 64 344 76 354
+           L86 362
+           L86 424
+           C86 446 78 468 70 494
+           L64 516
+           C62 522 64 528 70 530
+           L92 538
+           C98 540 104 536 106 530
+           L114 504
+           L126 504
+           L134 530
+           C136 536 142 540 148 538
+           L170 530
+           C176 528 178 522 176 516
+           L170 494
+           C162 468 154 446 154 424
+           L154 362
+           L164 354
+           C176 344 182 326 180 306
+           C178 290 174 262 172 246
+           L170 214
+           L178 210
+           C185 206 186 196 184 188
+           L170 142
+           C164 124 148 111 133 106
+           L133 92
+           C146 88 156 74 156 56
+           C156 34 142 18 120 18 Z" />
+
+      <path id="back_head" class="region"
+        d="M120 22 C102 22 90 36 90 56 C90 76 102 90 120 90 C138 90 150 76 150 56 C150 36 138 22 120 22 Z" />
+      <path id="back_neck" class="region"
+        d="M106 90 L134 90 L134 112 C134 118 106 118 106 112 Z" />
+
+      <path id="back_left_shoulder" class="region"
+        d="M106 112 C92 114 80 124 74 138 L64 164 L92 176 C96 160 100 144 106 136 Z" />
+      <path id="back_right_shoulder" class="region"
+        d="M134 112 C148 114 160 124 166 138 L176 164 L148 176 C144 160 140 144 134 136 Z" />
+
+      <path id="back_left_arm" class="region"
+        d="M64 164 L52 206 C50 212 52 218 58 222 L74 234 L90 192 Z" />
+      <path id="back_right_arm" class="region"
+        d="M176 164 L188 206 C190 212 188 218 182 222 L166 234 L150 192 Z" />
+
+      <path id="back_left_hand" class="region"
+        d="M58 222 C50 228 50 240 58 246 L80 262 C88 268 96 258 92 248 L74 234 Z" />
+      <path id="back_right_hand" class="region"
+        d="M182 222 C190 228 190 240 182 246 L160 262 C152 268 144 258 148 248 L166 234 Z" />
+
+      <path id="back_upper_back" class="region"
+        d="M90 132 C98 122 110 118 120 118 C130 118 142 122 150 132
+           C152 152 148 166 140 176 C134 184 126 188 120 188
+           C114 188 106 184 100 176 C92 166 88 152 90 132 Z" />
+
+      <path id="back_mid_back" class="region"
+        d="M98 188 L142 188 C146 212 144 236 138 256
+           C134 268 128 276 120 276 C112 276 106 268 102 256
+           C96 236 94 212 98 188 Z" />
+
+      <path id="back_low_back" class="region"
+        d="M102 276 L138 276 C142 300 140 324 134 344
+           C130 356 126 362 120 362 C114 362 110 356 106 344
+           C100 324 98 300 102 276 Z" />
+
+      <path id="back_sacrum" class="region"
+        d="M106 362 L134 362 C140 382 142 400 136 416
+           C132 426 126 434 120 434 C114 434 108 426 104 416
+           C98 400 100 382 106 362 Z" />
+
+      <path id="back_left_thigh" class="region"
+        d="M104 416 L118 416 L118 456 C118 476 112 498 106 512
+           L86 506 L92 486 C98 464 104 444 104 424 Z" />
+      <path id="back_right_thigh" class="region"
+        d="M122 416 L136 416 L136 424 C136 444 142 464 148 486
+           L154 506 L134 512 C128 498 122 476 122 456 Z" />
+
+      <path id="back_left_knee" class="region" d="M104 424 L118 424 L118 448 L104 448 Z" />
+      <path id="back_right_knee" class="region" d="M122 424 L136 424 L136 448 L122 448 Z" />
+
+      <path id="back_left_calf" class="region"
+        d="M104 448 L118 448 C118 472 112 492 106 514 L94 510 C98 492 104 472 104 448 Z" />
+      <path id="back_right_calf" class="region"
+        d="M122 448 L136 448 C136 472 142 492 146 510 L134 514 C128 492 122 472 122 448 Z" />
+
+      <path id="back_left_foot" class="region"
+        d="M86 506 L110 514 C112 530 96 540 84 536 L68 530 C62 528 62 520 66 516 Z" />
+      <path id="back_right_foot" class="region"
+        d="M154 506 L174 516 C178 520 178 528 172 530 L156 536 C144 540 128 530 130 514 Z" />
+    </svg>`;
   }
 
   render();
