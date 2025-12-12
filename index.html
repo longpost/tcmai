@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <title>中医症状选择与辨证示意</title>
+  <title>TCM Self-check</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     :root{
@@ -40,7 +40,8 @@
       transition:all .15s ease;
     }
     .region-btn.active{
-      border-color:var(--accent); background:var(--accent-soft); color:var(--accent); font-weight:600;
+      border-color:var(--accent); background:var(--accent-soft);
+      color:var(--accent); font-weight:600;
     }
     svg{width:100%; max-width:380px; min-width:260px; height:auto; border:1px solid #eee; border-radius:12px; padding:12px;
       background:radial-gradient(circle at 50% 0%,#fdfdfd,#f3f3f3);}
@@ -95,8 +96,7 @@
 
     <div class="body-region-buttons" id="regionButtons"></div>
 
-    <!-- 人形示意图 -->
-    <svg viewBox="0 0 200 400" aria-label="人体平面示意图">
+    <svg viewBox="0 0 200 400" aria-label="Body map">
       <g class="svg-clickable" onclick="selectRegion('head')">
         <circle cx="100" cy="50" r="25" fill="#fdfdfd" stroke="#ccc" />
         <text x="100" y="52" text-anchor="middle" class="svg-label" id="svgHead">头部</text>
@@ -149,7 +149,7 @@
         <div class="summary-title" id="selectedTitle">当前已选择症状：</div>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0;">
           <span class="pill" id="countPill">已选：0</span>
-          <span class="pill" id="apiPill">API：/api/analyze</span>
+          <span class="pill" id="apiPill">API：</span>
         </div>
         <div id="selectedSummary">暂未选择任何症状。</div>
       </div>
@@ -169,7 +169,7 @@
     </div>
   </div>
 
-  <!-- RIGHT (八纲/八证框) -->
+  <!-- RIGHT -->
   <div class="side-wrapper">
     <div class="card">
       <h2 id="eightTitle">八纲/八证（前端粗判）</h2>
@@ -190,7 +190,7 @@
   </div>
 
 <script>
-  // ✅ 你后端地址
+  // ===== 0) 后端 API 地址 =====
   const API_URL = "https://tcmai-api.vercel.app/api/analyze";
 
   const UI_TEXT = {
@@ -220,104 +220,40 @@
     }
   };
 
-  // ✅ 症状唯一数据源（zh 用作“后端匹配 key”）
+  // ✅ 症状唯一数据源：带 id（后端要用！）
   const SYMPTOMS = [
-    { zh:"头晕", en:"Dizziness", regions:["head"] },
-    { zh:"头痛", en:"Headache", regions:["head"] },
-    { zh:"偏头痛", en:"Migraine", regions:["head"] },
-    { zh:"头重如裹", en:"Heavy head sensation", regions:["head"] },
+    // chest
+    { id:"palpitations", zh:"心悸", en:"Palpitations", regions:["chest"] },
+    { id:"yellow_sticky_phlegm", zh:"痰黄黏", en:"Yellow sticky phlegm", regions:["chest"] },
 
-    { zh:"目赤", en:"Red eyes", regions:["eye"] },
-    { zh:"目干", en:"Dry eyes", regions:["eye"] },
-    { zh:"视物模糊", en:"Blurred vision", regions:["eye"] },
-    { zh:"眼痒", en:"Itchy eyes", regions:["eye"] },
+    // stool/urine
+    { id:"loose_stool", zh:"便溏", en:"Loose stool", regions:["stool"] },
+    { id:"clear_long_urine", zh:"小便清长", en:"Clear copious urine", regions:["urine"] },
+    { id:"short_red_urine", zh:"小便短赤", en:"Dark scanty urine", regions:["urine"] },
+    { id:"constipation", zh:"大便干结", en:"Dry constipation", regions:["stool"] },
 
-    { zh:"耳鸣", en:"Tinnitus", regions:["ear"] },
-    { zh:"耳闷", en:"Ear fullness", regions:["ear"] },
-    { zh:"听力下降", en:"Hearing loss", regions:["ear"] },
-
-    { zh:"鼻塞", en:"Nasal congestion", regions:["nose"] },
-    { zh:"流清涕", en:"Clear nasal discharge", regions:["nose"] },
-    { zh:"流黄涕", en:"Yellow nasal discharge", regions:["nose"] },
-    { zh:"喷嚏", en:"Sneezing", regions:["nose"] },
-
-    { zh:"咽痛", en:"Sore throat", regions:["throat"] },
-    { zh:"咽干", en:"Dry throat", regions:["throat"] },
-    { zh:"咽痒", en:"Itchy throat", regions:["throat"] },
-    { zh:"咽中异物感", en:"Globus sensation", regions:["throat"] },
-    { zh:"声音嘶哑", en:"Hoarseness", regions:["throat"] },
-
-    { zh:"口干", en:"Dry mouth", regions:["mouth"] },
-    { zh:"口苦", en:"Bitter taste", regions:["mouth"] },
-    { zh:"口臭", en:"Bad breath", regions:["mouth"] },
-    { zh:"口黏不渴", en:"Sticky mouth without thirst", regions:["mouth"] },
-    { zh:"口渴喜冷饮", en:"Thirst for cold drinks", regions:["mouth"] },
-    { zh:"口渴不多饮", en:"Thirst but drinks little", regions:["mouth"] },
-
-    { zh:"胸闷", en:"Chest oppression", regions:["chest"] },
-    { zh:"心悸", en:"Palpitations", regions:["chest"] },
-    { zh:"气短懒言", en:"Shortness of breath / low voice", regions:["chest"] },
-    { zh:"咳嗽", en:"Cough", regions:["chest"] },
-    { zh:"痰多", en:"Copious phlegm", regions:["chest"] },
-    { zh:"痰黄黏", en:"Yellow sticky phlegm", regions:["chest"] },
-    { zh:"痰白清稀", en:"Clear watery phlegm", regions:["chest"] },
-    { zh:"胸痛", en:"Chest pain", regions:["chest"] },
-
-    { zh:"胃脘胀痛", en:"Epigastric distension/pain", regions:["upperAbd"] },
-    { zh:"胃脘灼痛", en:"Epigastric burning pain", regions:["upperAbd"] },
-    { zh:"嗳气", en:"Belching", regions:["upperAbd"] },
-    { zh:"反酸", en:"Acid reflux", regions:["upperAbd"] },
-    { zh:"纳呆", en:"Poor appetite", regions:["upperAbd"] },
-
-    { zh:"腹胀", en:"Abdominal bloating", regions:["midAbd"] },
-    { zh:"腹痛", en:"Abdominal pain", regions:["midAbd"] },
-
-    { zh:"小腹坠胀", en:"Lower abdominal heaviness", regions:["lowerAbd"] },
-    { zh:"小腹冷痛", en:"Cold pain in lower abdomen", regions:["lowerAbd"] },
-    { zh:"经行腹痛", en:"Menstrual abdominal pain", regions:["lowerAbd"] },
-    { zh:"经量少", en:"Scanty menstruation", regions:["lowerAbd"] },
-    { zh:"经色紫暗有块", en:"Dark-purple menses with clots", regions:["lowerAbd"] },
-
-    { zh:"便溏", en:"Loose stool", regions:["stool"] },
-    { zh:"大便干结", en:"Dry constipation", regions:["stool"] },
-
-    { zh:"小便短赤", en:"Dark scanty urine", regions:["urine"] },
-    { zh:"小便清长", en:"Clear copious urine", regions:["urine"] },
-
-    { zh:"乏力", en:"Fatigue", regions:["whole"] },
-    { zh:"神疲懒言", en:"Lassitude / low speech", regions:["whole"] },
-    { zh:"自汗", en:"Spontaneous sweating", regions:["whole"] },
-    { zh:"盗汗", en:"Night sweating", regions:["whole"] },
-    { zh:"畏寒肢冷", en:"Aversion to cold / cold limbs", regions:["whole"] },
-    { zh:"手足心热", en:"Heat in palms/soles", regions:["whole"] },
-    { zh:"面色少华", en:"Pale complexion", regions:["whole"] },
-    { zh:"面色潮红", en:"Flushed complexion", regions:["whole"] },
-    { zh:"四肢沉重", en:"Heavy limbs", regions:["whole"] },
-    { zh:"肢体麻木", en:"Numbness", regions:["whole"] },
-    { zh:"水肿", en:"Edema", regions:["whole"] },
-    { zh:"易怒", en:"Irritability", regions:["whole"] },
-    { zh:"烦躁", en:"Restlessness", regions:["whole"] }
+    // whole
+    { id:"cold_aversion", zh:"畏寒肢冷", en:"Aversion to cold / cold limbs", regions:["whole"] },
+    { id:"cold_limbs", zh:"手脚冰凉", en:"Cold limbs", regions:["whole"] },
+    { id:"five_center_heat", zh:"五心烦热", en:"Five-center heat", regions:["whole"] },
+    { id:"palm_sole_heat", zh:"手足心热", en:"Heat in palms/soles", regions:["whole"] },
+    { id:"fatigue", zh:"乏力", en:"Fatigue", regions:["whole"] },
+    { id:"lazy_low_energy", zh:"神疲懒言", en:"Lassitude / low speech", regions:["whole"] },
+    { id:"pale_complexion", zh:"面色少华", en:"Pale complexion", regions:["whole"] },
+    { id:"flushed_face", zh:"面色潮红", en:"Flushed complexion", regions:["whole"] },
+    { id:"restlessness", zh:"烦躁", en:"Restlessness", regions:["whole"] },
   ];
 
   const REGION_META = [
-    { key:"head", zh:"头部", en:"Head" },
-    { key:"eye", zh:"眼", en:"Eyes" },
-    { key:"ear", zh:"耳", en:"Ears" },
-    { key:"nose", zh:"鼻", en:"Nose" },
-    { key:"throat", zh:"咽喉", en:"Throat" },
-    { key:"mouth", zh:"口腔/口渴", en:"Mouth/Thirst" },
     { key:"chest", zh:"胸部 / 心肺", en:"Chest" },
-    { key:"upperAbd", zh:"上腹 / 胃脘", en:"Upper abdomen" },
-    { key:"midAbd", zh:"中腹", en:"Mid abdomen" },
-    { key:"lowerAbd", zh:"下腹 / 月经", en:"Lower abdomen / Menses" },
     { key:"stool", zh:"大便", en:"Stool" },
     { key:"urine", zh:"小便", en:"Urine" },
     { key:"whole", zh:"全身 / 体质", en:"Whole body" },
   ];
 
   let lang="zh";
-  let currentRegionKey="head";
-  let selectedSymptoms=[]; // {regionKey, symptomZh}
+  let currentRegionKey="whole";
+  let selectedSymptoms=[]; // {regionKey, symptomId}
 
   const regionButtonsEl=document.getElementById("regionButtons");
   const symptomListEl=document.getElementById("symptomList");
@@ -340,20 +276,17 @@
     const r=REGION_META.find(x=>x.key===key);
     return r ? (lang==="zh"?r.zh:r.en) : key;
   }
-  function findSymptom(zh){return SYMPTOMS.find(x=>x.zh===zh);}
+  function findSymptomById(id){return SYMPTOMS.find(x=>x.id===id);}
   function symptomsForRegion(key){
-    const list=SYMPTOMS.filter(s=>(s.regions||[]).includes(key));
-    const seen=new Set(); const out=[];
-    for(const s of list){ if(seen.has(s.zh)) continue; seen.add(s.zh); out.push(s); }
-    return out;
+    return SYMPTOMS.filter(s=>(s.regions||[]).includes(key));
   }
-  function isSelected(regionKey, symptomZh){
-    return selectedSymptoms.some(x=>x.regionKey===regionKey && x.symptomZh===symptomZh);
+  function isSelected(regionKey, symptomId){
+    return selectedSymptoms.some(x=>x.regionKey===regionKey && x.symptomId===symptomId);
   }
-  function toggleSymptom(regionKey, symptomZh){
-    const idx=selectedSymptoms.findIndex(x=>x.regionKey===regionKey && x.symptomZh===symptomZh);
+  function toggleSymptom(regionKey, symptomId){
+    const idx=selectedSymptoms.findIndex(x=>x.regionKey===regionKey && x.symptomId===symptomId);
     if(idx>=0) selectedSymptoms.splice(idx,1);
-    else selectedSymptoms.push({regionKey, symptomZh});
+    else selectedSymptoms.push({regionKey, symptomId});
     renderSymptomList();
     renderSelectedSummary();
     renderEight();
@@ -380,17 +313,6 @@
     document.getElementById("eightTitle").textContent=t("eightTitle");
     document.getElementById("eightHint").textContent=t("eightHint");
     document.getElementById("eightWhyTitle").textContent=t("whyTitle");
-
-    // svg
-    document.getElementById("svgHead").textContent=lang==="zh"?"头部":"Head";
-    document.getElementById("svgChest").textContent=lang==="zh"?"胸部":"Chest";
-    document.getElementById("svgUpper").textContent=lang==="zh"?"上腹":"Upper";
-    document.getElementById("svgMid").textContent=lang==="zh"?"中腹":"Mid";
-    document.getElementById("svgLower").textContent=lang==="zh"?"下腹":"Lower";
-    document.getElementById("svgWhole").textContent=lang==="zh"?"全身":"Whole";
-    document.getElementById("svgStool").textContent=lang==="zh"?"大便":"Stool";
-    document.getElementById("svgUrine").textContent=lang==="zh"?"小便":"Urine";
-
     analyzeBtn.textContent=t("analyze");
     apiPill.textContent=`API: ${API_URL.replace(/^https?:\/\//,'')}`;
   }
@@ -407,9 +329,9 @@
     for(const s of list){
       const tag=document.createElement("button");
       tag.type="button";
-      tag.className="symptom-tag"+(isSelected(currentRegionKey,s.zh)?" selected":"");
+      tag.className="symptom-tag"+(isSelected(currentRegionKey,s.id)?" selected":"");
       tag.textContent=lang==="zh"?s.zh:s.en;
-      tag.onclick=()=>toggleSymptom(currentRegionKey,s.zh);
+      tag.onclick=()=>toggleSymptom(currentRegionKey,s.id);
       container.appendChild(tag);
     }
     symptomListEl.appendChild(container);
@@ -423,22 +345,24 @@
       renderAnalysisResult(null);
       return;
     }
+
     const byRegion={};
     for(const item of selectedSymptoms){
       const label=regionLabel(item.regionKey);
       if(!byRegion[label]) byRegion[label]=[];
-      const s=findSymptom(item.symptomZh);
-      byRegion[label].push(lang==="zh" ? item.symptomZh : (s?s.en:item.symptomZh));
+      const s=findSymptomById(item.symptomId);
+      byRegion[label].push(lang==="zh" ? (s?s.zh:item.symptomId) : (s?s.en:item.symptomId));
     }
+
     const lines=Object.keys(byRegion).map(label=>{
       const uniq=Array.from(new Set(byRegion[label]));
       return `${label}: ${uniq.join(lang==="zh"?"、":", ")}`;
     });
+
     selectedSummaryEl.innerHTML=lines.map(line=>`<div class="summary-item">${line}</div>`).join("");
 
-    // debug payload
     const payload = {
-      symptoms: selectedSymptoms.map(s=>({ region: regionLabel(s.regionKey), symptom: s.symptomZh })),
+      symptoms: selectedSymptoms.map(s=>({ id:s.symptomId, region: regionLabel(s.regionKey) })),
       lang
     };
     debugPayloadEl.textContent = JSON.stringify(payload, null, 2);
@@ -462,7 +386,7 @@
     analysisResultEl.innerHTML=html;
   }
 
-  // —— 八纲/八证：前端粗判（只做自我复核，不做诊断）——
+  // —— 八纲：前端粗判（用 symptomId）——
   function renderEight(){
     if(!selectedSymptoms.length){
       biaoLiEl.textContent = (lang==="zh"?"表/里：未判":"Exterior/Interior: N/A");
@@ -473,60 +397,53 @@
       return;
     }
 
-    const names = selectedSymptoms.map(x=>x.symptomZh);
+    const ids = selectedSymptoms.map(x=>x.symptomId);
+    const heat = [];
+    const cold = [];
+    const interior = [];
+    const deficiency = [];
+    const excess = [];
 
-    // 简单关键词规则（你以后想精细，可以把这些挪到 tcmFeatures 里）
-    const heatHits = [];
-    const coldHits = [];
-    const extHits  = [];
-    const intHits  = [];
-    const defHits  = [];
-    const exHits   = [];
+    const HEAT = ["yellow_sticky_phlegm","short_red_urine","constipation","five_center_heat","restlessness","flushed_face","palm_sole_heat"];
+    const COLD = ["cold_aversion","cold_limbs","clear_long_urine","loose_stool"];
+    const INTERIOR = ["loose_stool","clear_long_urine","short_red_urine","constipation"];
+    const DEF = ["fatigue","lazy_low_energy","pale_complexion"];
+    const EXC = ["yellow_sticky_phlegm","palpitations","restlessness"];
 
-    const HEAT = ["口苦","口渴喜冷饮","痰黄黏","小便短赤","目赤","咽痛","烦躁","面色潮红","胃脘灼痛","大便干结"];
-    const COLD = ["畏寒肢冷","手足心热"/*这里其实偏虚热，放下面处理*/, "痰白清稀","小便清长","小腹冷痛","便溏"];
-    const EXTERIOR = ["鼻塞","喷嚏","流清涕","流黄涕","咽痛","咽痒","咳嗽"];
-    const INTERIOR = ["腹胀","腹痛","胃脘胀痛","反酸","纳呆","便溏","大便干结","小便短赤","小便清长","经行腹痛","经量少"];
-    const DEF = ["乏力","神疲懒言","自汗","盗汗","面色少华"];
-    const EXCESS = ["胸闷","腹胀","头痛","偏头痛","痰多","痰黄黏","痰白清稀","烦躁"];
-
-    for(const n of names){
-      if(HEAT.includes(n)) heatHits.push(n);
-      if(COLD.includes(n)) coldHits.push(n);
-      if(EXTERIOR.includes(n)) extHits.push(n);
-      if(INTERIOR.includes(n)) intHits.push(n);
-      if(DEF.includes(n)) defHits.push(n);
-      if(EXCESS.includes(n)) exHits.push(n);
+    for(const id of ids){
+      if(HEAT.includes(id)) heat.push(id);
+      if(COLD.includes(id)) cold.push(id);
+      if(INTERIOR.includes(id)) interior.push(id);
+      if(DEF.includes(id)) deficiency.push(id);
+      if(EXC.includes(id)) excess.push(id);
     }
 
-    // 特判：手足心热/盗汗/口干 更像阴虚热象
-    if(names.includes("手足心热") || names.includes("盗汗") || names.includes("口干")){
-      heatHits.push(...["手足心热","盗汗","口干"].filter(x=>names.includes(x)));
-    }
-
-    const biaoLi = extHits.length>=2 && intHits.length===0 ? "表" : (intHits.length>=2 ? "里" : "表里未明");
-    const hanRe  = heatHits.length>coldHits.length ? "热" : (coldHits.length>heatHits.length ? "寒" : "寒热未明");
-    const xuShi  = defHits.length>=2 && exHits.length===0 ? "虚" : (exHits.length>=2 ? "实" : "虚实夹杂/未明");
-
-    let yinYang = "未明";
-    if(hanRe==="寒" || xuShi==="虚") yinYang = "偏阴";
-    if(hanRe==="热" || xuShi==="实") yinYang = "偏阳";
-    if(hanRe==="寒热未明" && xuShi==="虚实夹杂/未明") yinYang="未明";
+    const hanRe = heat.length>cold.length ? "热" : (cold.length>heat.length ? "寒" : "寒热不明");
+    const biaoLi = interior.length>=1 ? "里" : "表里不明";
+    const xuShi = deficiency.length>=2 ? "偏虚" : (excess.length>=2 ? "偏实" : "虚实夹杂/未明");
+    let yinYang = "阴阳不明";
+    if(hanRe==="寒" && xuShi==="偏虚") yinYang="偏阳虚";
+    else if(hanRe==="热" && xuShi==="偏虚") yinYang="偏阴虚/虚热";
+    else if(hanRe==="热" && xuShi==="偏实") yinYang="偏阳盛/实热";
+    else if(hanRe==="寒" && xuShi==="偏实") yinYang="偏寒实";
 
     biaoLiEl.textContent = (lang==="zh"?`表/里：${biaoLi}`:`Exterior/Interior: ${biaoLi}`);
     hanReEl.textContent  = (lang==="zh"?`寒/热：${hanRe}`:`Cold/Heat: ${hanRe}`);
     xuShiEl.textContent  = (lang==="zh"?`虚/实：${xuShi}`:`Def/Excess: ${xuShi}`);
     yinYangEl.textContent= (lang==="zh"?`阴/阳：${yinYang}`:`Yin/Yang: ${yinYang}`);
 
-    const whyParts = [];
-    if(extHits.length) whyParts.push((lang==="zh"?"表象参考：":"Exterior hits: ")+extHits.join(lang==="zh"?"、":", "));
-    if(intHits.length) whyParts.push((lang==="zh"?"里象参考：":"Interior hits: ")+intHits.join(lang==="zh"?"、":", "));
-    if(heatHits.length) whyParts.push((lang==="zh"?"热象参考：":"Heat hits: ")+Array.from(new Set(heatHits)).join(lang==="zh"?"、":", "));
-    if(coldHits.length) whyParts.push((lang==="zh"?"寒象参考：":"Cold hits: ")+coldHits.join(lang==="zh"?"、":", "));
-    if(defHits.length) whyParts.push((lang==="zh"?"虚象参考：":"Def hits: ")+defHits.join(lang==="zh"?"、":", "));
-    if(exHits.length) whyParts.push((lang==="zh"?"实象参考：":"Excess hits: ")+exHits.join(lang==="zh"?"、":", "));
+    const toName = (id) => {
+      const s = findSymptomById(id);
+      return lang==="zh" ? (s?s.zh:id) : (s?s.en:id);
+    };
 
-    eightWhy.textContent = whyParts.length ? whyParts.join(" | ") : (lang==="zh"?"目前依据不足。":"Not enough evidence yet.");
+    const parts = [];
+    if(interior.length) parts.push((lang==="zh"?"里象参考：":"Interior: ")+interior.map(toName).join(lang==="zh"?"、":", "));
+    if(heat.length) parts.push((lang==="zh"?"热象参考：":"Heat: ")+heat.map(toName).join(lang==="zh"?"、":", "));
+    if(cold.length) parts.push((lang==="zh"?"寒象参考：":"Cold: ")+cold.map(toName).join(lang==="zh"?"、":", "));
+    if(deficiency.length) parts.push((lang==="zh"?"虚象参考：":"Def: ")+deficiency.map(toName).join(lang==="zh"?"、":", "));
+    if(excess.length) parts.push((lang==="zh"?"实象参考：":"Excess: ")+excess.map(toName).join(lang==="zh"?"、":", "));
+    eightWhy.textContent = parts.join(" | ");
   }
 
   function selectRegion(key){
@@ -549,7 +466,7 @@
 
     try{
       const payload = {
-        symptoms: selectedSymptoms.map(s=>({ region: regionLabel(s.regionKey), symptom: s.symptomZh })),
+        symptoms: selectedSymptoms.map(s=>({ id:s.symptomId, region: regionLabel(s.regionKey) })),
         lang
       };
       debugPayloadEl.textContent = JSON.stringify(payload, null, 2);
@@ -586,8 +503,7 @@
   // init
   updateTexts();
   renderRegionButtons();
-  updateCurrentRegionTitle();
-  renderSymptomList();
+  selectRegion("whole");
   renderSelectedSummary();
   renderEight();
   renderAnalysisResult(null);
