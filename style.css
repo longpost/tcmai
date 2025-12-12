@@ -1,0 +1,109 @@
+/* style.css */
+
+:root{
+  --border:#e5e7eb;
+  --bg:#ffffff;
+  --muted:#6b7280;
+  --text:#111827;
+  --card:#f9fafb;
+}
+
+*{ box-sizing:border-box; }
+body{
+  margin:0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+  color:var(--text);
+  background:var(--bg);
+}
+
+.container{
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 18px;
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  gap: 18px;
+}
+
+.card{
+  border:1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+  padding: 14px;
+}
+
+h1,h2,h3{ margin:0 0 10px 0; }
+.small{ color:var(--muted); font-size: 12px; line-height: 1.4; }
+
+.row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+select, button, input{
+  border:1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: #fff;
+  color: var(--text);
+}
+button{ cursor:pointer; }
+button:disabled{ opacity:.5; cursor:not-allowed; }
+
+hr{ border:none; border-top:1px solid var(--border); margin:12px 0; }
+
+.symptom-list{
+  display:flex;
+  flex-wrap:wrap;
+  gap: 8px;
+}
+.chip{
+  border:1px solid var(--border);
+  background:#fff;
+  border-radius:999px;
+  padding: 6px 10px;
+  font-size: 13px;
+  cursor:pointer;
+  user-select:none;
+}
+.chip.active{
+  border-color:#111827;
+}
+
+.result{
+  white-space: pre-wrap;
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+/* ====== Body map fixes ====== */
+
+/* 关键：whole 大遮罩不吃点击，避免挡住肺/腹部等热点 */
+svg .region[data-region="whole"]{
+  pointer-events: none !important;
+  opacity: 0.10; /* 只是视觉淡淡一层 */
+}
+
+/* 只有“whole-hotspot” 这种小点才允许点 whole */
+svg .whole-hotspot{
+  pointer-events: all;
+  cursor: pointer;
+  opacity: 0.85;
+}
+svg .whole-hotspot:hover{ opacity: 1; }
+
+svg .region{
+  cursor:pointer;
+  transition: opacity .15s ease;
+}
+svg .region:hover{ opacity: .85; }
+
+/* 让具体部位热点在视觉上更“优先” */
+svg .region[data-region="ear"],
+svg .region[data-region="eye"],
+svg .region[data-region="nose"],
+svg .region[data-region="mouth"],
+svg .region[data-region="throat"],
+svg .region[data-region="chest"],
+svg .region[data-region="upperAbd"],
+svg .region[data-region="midAbd"],
+svg .region[data-region="lowerAbd"],
+svg .region[data-region="head"]{
+  opacity: 0.55;
+}
