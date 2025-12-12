@@ -2,512 +2,640 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <title>TCM Self-check</title>
+  <title>TCM Self-check (Educational)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    :root{
-      --bg:#f5f5f7; --card-bg:#fff; --border:#e0e0e0;
-      --accent:#0077b6; --accent-soft:rgba(0,119,182,.08);
-      --danger:#b00020; --text-main:#222; --text-secondary:#555;
-      --tag-bg:#f0f0f3; --tag-selected-bg:#0077b6; --tag-selected-text:#fff;
+    :root {
+      --bg: #f5f5f7;
+      --card-bg: #ffffff;
+      --border: #e0e0e0;
+      --accent: #0077b6;
+      --accent-soft: rgba(0, 119, 182, 0.08);
+      --danger: #b00020;
+      --text-main: #222222;
+      --text-secondary: #555555;
+      --tag-bg: #f0f0f3;
+      --tag-selected-bg: #0077b6;
+      --tag-selected-text: #ffffff;
     }
-    *{box-sizing:border-box}
-    body{
-      margin:0; padding:16px;
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans","PingFang SC","Microsoft YaHei",sans-serif;
-      background:radial-gradient(circle at top,#fff,var(--bg));
-      color:var(--text-main);
-      display:flex; gap:16px; min-height:100vh;
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        "Helvetica Neue", Arial, "Noto Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: radial-gradient(circle at top, #ffffff, var(--bg));
+      color: var(--text-main);
+      display: flex;
+      flex-direction: row;
+      gap: 16px;
+      min-height: 100vh;
     }
-    .card{
-      background:var(--card-bg);
-      border-radius:16px;
-      box-shadow:0 8px 20px rgba(0,0,0,.04);
-      border:1px solid var(--border);
-      padding:16px 18px;
-      min-width:0;
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+      border: 1px solid var(--border);
+      padding: 16px 18px;
     }
-    .body-wrapper{flex:0 0 320px; display:flex; flex-direction:column; align-items:center; gap:12px;}
-    .right-wrapper{flex:1; display:flex; flex-direction:column; gap:12px; min-width:0;}
-    .side-wrapper{flex:0 0 320px; display:flex; flex-direction:column; gap:12px; min-width:0;}
-    h1{font-size:1.15rem; margin:0 0 4px;}
-    h2{font-size:1rem; margin:0 0 8px;}
-    .body-region-buttons{display:flex; flex-wrap:wrap; justify-content:center; gap:6px;}
-    .region-btn{
-      border-radius:999px; border:1px solid var(--border);
-      padding:4px 10px; font-size:.8rem; background:#fafafa;
-      cursor:pointer; color:var(--text-secondary);
-      transition:all .15s ease;
+
+    .body-wrapper {
+      flex: 0 0 320px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
     }
-    .region-btn.active{
-      border-color:var(--accent); background:var(--accent-soft);
-      color:var(--accent); font-weight:600;
+
+    .right-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-width: 0;
     }
-    svg{width:100%; max-width:380px; min-width:260px; height:auto; border:1px solid #eee; border-radius:12px; padding:12px;
-      background:radial-gradient(circle at 50% 0%,#fdfdfd,#f3f3f3);}
-    .svg-clickable{cursor:pointer; transition:fill .12s ease,stroke .12s ease;}
-    .svg-clickable:hover{fill:#f0f8ff; stroke:#99ccee;}
-    .svg-label{font-size:8px; fill:#888; pointer-events:none;}
-    .symptom-tags{display:flex; flex-wrap:wrap; gap:6px; margin-top:6px;}
-    .symptom-tag{
-      font-size:.82rem; padding:4px 10px; border-radius:999px;
-      border:1px solid var(--border); background:var(--tag-bg); color:var(--text-secondary);
-      cursor:pointer; user-select:none; transition:all .12s ease; white-space:nowrap;
+
+    h1 { font-size: 1.15rem; margin: 0 0 4px; }
+    h2 { font-size: 1rem; margin: 0 0 8px; }
+
+    .row {
+      width: 100%;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: flex-start;
+      flex-wrap: wrap;
     }
-    .symptom-tag.selected{border-color:var(--accent); background:var(--tag-selected-bg); color:var(--tag-selected-text); font-weight:500;}
-    .summary-box{font-size:.86rem; color:var(--text-secondary); line-height:1.5;}
-    .summary-title{font-weight:600; margin-bottom:4px;}
-    .summary-item{margin-bottom:2px;}
-    .btn-primary{
-      display:inline-flex; align-items:center; justify-content:center;
-      padding:8px 16px; border-radius:999px; border:none;
-      background:var(--accent); color:#fff; font-size:.9rem; cursor:pointer; margin-top:6px;
-      transition:background .15s ease, box-shadow .15s ease, transform .06s ease;
-      box-shadow:0 4px 10px rgba(0,119,182,.25);
+
+    .body-region-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
     }
-    .btn-primary:active{transform:translateY(1px); box-shadow:0 2px 6px rgba(0,119,182,.25);}
-    .btn-primary:disabled{opacity:.6; cursor:wait; box-shadow:none;}
-    .result-box{font-size:.9rem; line-height:1.6; color:var(--text-main);}
-    .result-title{font-weight:700; margin-bottom:6px;}
-    .result-section{margin-top:6px;}
-    .result-label{font-weight:700;}
-    .result-warning{margin-top:8px; color:var(--danger);}
-    .ai-note{margin-top:10px; padding-top:8px; border-top:1px dashed #ddd; font-size:.88rem; color:#333;}
-    .ai-error{margin-top:6px; color:var(--danger); font-size:.85rem;}
-    .hint{font-size:.78rem; color:var(--text-secondary); margin-top:4px;}
-    .pill{display:inline-block; padding:2px 8px; border:1px solid var(--border); border-radius:999px; background:#fafafa; font-size:.78rem; color:var(--text-secondary);}
-    pre{white-space:pre-wrap; word-break:break-word; background:#fafafa; border:1px solid var(--border); border-radius:12px; padding:10px; font-size:.78rem; color:#333; margin:8px 0 0;}
-    @media (max-width:1100px){
-      body{flex-direction:column;}
-      .body-wrapper,.side-wrapper{flex:unset; width:100%;}
+
+    .region-btn {
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      padding: 4px 10px;
+      font-size: 0.8rem;
+      background: #fafafa;
+      cursor: pointer;
+      color: var(--text-secondary);
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+
+    .region-btn.active {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .symptom-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .symptom-tag {
+      font-size: 0.82rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--tag-bg);
+      color: var(--text-secondary);
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.12s ease;
+      white-space: nowrap;
+    }
+
+    .symptom-tag.selected {
+      border-color: var(--accent);
+      background: var(--tag-selected-bg);
+      color: var(--tag-selected-text);
+      font-weight: 500;
+    }
+
+    .summary-box {
+      font-size: 0.86rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .summary-title { font-weight: 600; margin-bottom: 4px; }
+    .summary-item { margin-bottom: 2px; }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: none;
+      background: var(--accent);
+      color: #ffffff;
+      font-size: 0.9rem;
+      cursor: pointer;
+      margin-top: 6px;
+      transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.06s ease;
+      box-shadow: 0 4px 10px rgba(0, 119, 182, 0.25);
+    }
+
+    .btn-primary:active { transform: translateY(1px); box-shadow: 0 2px 6px rgba(0,119,182,0.25); }
+    .btn-primary:disabled { opacity: 0.6; cursor: wait; box-shadow: none; }
+
+    .hint {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    .result-box {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: var(--text-main);
+    }
+
+    .result-title { font-weight: 600; margin-bottom: 4px; }
+    .result-section { margin-top: 6px; }
+    .result-label { font-weight: 600; }
+    .result-warning { margin-top: 8px; color: var(--danger); }
+
+    .ai-note {
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px dashed #ddd;
+      font-size: 0.88rem;
+      color: #333333;
+    }
+    .ai-error { margin-top: 6px; color: var(--danger); font-size: 0.85rem; }
+
+    .small {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+    }
+
+    .pill {
+      padding: 2px 8px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: #fafafa;
+    }
+
+    @media (max-width: 900px) {
+      body { flex-direction: column; }
+      .body-wrapper { width: 100%; }
     }
   </style>
 </head>
 
 <body>
-  <!-- LEFT -->
   <div class="body-wrapper card">
-    <h1 id="leftTitle">部位选择</h1>
+    <h1 id="titleRegion">部位选择</h1>
 
-    <div style="display:flex;gap:8px;justify-content:center;margin-bottom:4px;">
+    <div class="row" style="justify-content:center; margin-bottom:4px;">
       <button id="btnZh" class="region-btn active" type="button">中文</button>
       <button id="btnEn" class="region-btn" type="button">English</button>
     </div>
 
     <div class="body-region-buttons" id="regionButtons"></div>
 
-    <svg viewBox="0 0 200 400" aria-label="Body map">
-      <g class="svg-clickable" onclick="selectRegion('head')">
-        <circle cx="100" cy="50" r="25" fill="#fdfdfd" stroke="#ccc" />
-        <text x="100" y="52" text-anchor="middle" class="svg-label" id="svgHead">头部</text>
-      </g>
-      <g class="svg-clickable" onclick="selectRegion('chest')">
-        <rect x="75" y="80" width="50" height="40" rx="16" fill="#fdfdfd" stroke="#ccc" />
-        <text x="100" y="102" text-anchor="middle" class="svg-label" id="svgChest">胸部</text>
-      </g>
-      <g class="svg-clickable" onclick="selectRegion('upperAbd')">
-        <rect x="75" y="120" width="50" height="40" rx="16" fill="#fdfdfd" stroke="#ccc" />
-        <text x="100" y="142" text-anchor="middle" class="svg-label" id="svgUpper">上腹</text>
-      </g>
-      <g class="svg-clickable" onclick="selectRegion('midAbd')">
-        <rect x="75" y="160" width="50" height="30" rx="14" fill="#fdfdfd" stroke="#ccc" />
-        <text x="100" y="178" text-anchor="middle" class="svg-label" id="svgMid">中腹</text>
-      </g>
-      <g class="svg-clickable" onclick="selectRegion('lowerAbd')">
-        <rect x="80" y="190" width="40" height="40" rx="16" fill="#fdfdfd" stroke="#ccc" />
-        <text x="100" y="212" text-anchor="middle" class="svg-label" id="svgLower">下腹</text>
-      </g>
-      <g class="svg-clickable" onclick="selectRegion('whole')">
-        <rect x="45" y="90" width="25" height="90" rx="12" fill="#fdfdfd" stroke="#ccc" />
-        <rect x="130" y="90" width="25" height="90" rx="12" fill="#fdfdfd" stroke="#ccc" />
-        <rect x="80" y="230" width="16" height="70" rx="10" fill="#fdfdfd" stroke="#ccc" />
-        <rect x="104" y="230" width="16" height="70" rx="10" fill="#fdfdfd" stroke="#ccc" />
-        <text x="100" y="320" text-anchor="middle" class="svg-label" id="svgWhole">全身</text>
-      </g>
-      <g class="svg-clickable" onclick="selectRegion('stool')">
-        <rect x="30" y="330" width="50" height="24" rx="10" fill="#fdfdfd" stroke="#ccc" />
-        <text x="55" y="347" text-anchor="middle" class="svg-label" id="svgStool">大便</text>
-      </g>
-      <g class="svg-clickable" onclick="selectRegion('urine')">
-        <rect x="120" y="330" width="50" height="24" rx="10" fill="#fdfdfd" stroke="#ccc" />
-        <text x="145" y="347" text-anchor="middle" class="svg-label" id="svgUrine">小便</text>
-      </g>
-    </svg>
-
-    <div class="hint" id="leftHint">提示：点击部位按钮或人形图切换部位，再多选症状。</div>
+    <div class="hint" id="hintLeft">
+      提示：点击部位按钮切换部位，再多选症状。
+    </div>
   </div>
 
-  <!-- MIDDLE -->
   <div class="right-wrapper">
     <div class="card">
-      <h1 id="rightTitle">症状多选（按部位）</h1>
+      <h1 id="titleSymptoms">症状多选（按部位）</h1>
 
-      <div id="currentRegionTitle" style="font-size:0.92rem;margin-bottom:4px;">当前部位：</div>
+      <div id="currentRegionTitle" style="font-size:0.92rem;margin-bottom:4px;">
+        当前部位：
+      </div>
+
       <div id="symptomList"></div>
 
       <div class="summary-box" style="margin-top:10px;">
-        <div class="summary-title" id="selectedTitle">当前已选择症状：</div>
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0;">
-          <span class="pill" id="countPill">已选：0</span>
-          <span class="pill" id="apiPill">API：</span>
-        </div>
+        <div class="summary-title" id="titleSelected">当前已选择症状：</div>
         <div id="selectedSummary">暂未选择任何症状。</div>
+        <div class="small" style="margin-top:6px;">
+          <span class="pill" id="selectedCount">已选：0</span>
+          <span class="pill" id="apiInfo">API: -</span>
+        </div>
       </div>
 
       <button id="analyzeBtn" class="btn-primary">生成辨证建议（从后端）</button>
-      <div class="hint" id="rightHint">温馨提示：此工具仅用于中医理论学习和示意，不用于真实诊断或处方。</div>
+
+      <div class="hint" id="tipRight">
+        温馨提示：此工具仅用于中医理论学习和示意，不用于真实诊断或处方。
+      </div>
 
       <details style="margin-top:10px;">
-        <summary class="hint">调试：查看发送给后端的 payload</summary>
-        <pre id="debugPayload">{}</pre>
+        <summary class="small" id="debugTitle">调试：查看发送给后端的 payload</summary>
+        <pre id="debugPayload" style="white-space:pre-wrap; font-size:12px; color:#333;"></pre>
       </details>
     </div>
 
     <div class="card">
-      <h2 id="resultTitle">辨证结果示意</h2>
-      <div id="analysisResult" class="result-box">请选择多个症状后，点击“生成辨证建议”查看示意性分析。</div>
+      <h2 id="titleResult">辨证结果示意</h2>
+      <div id="analysisResult" class="result-box">
+        请选择多个症状后，点击“生成辨证建议”查看示意性分析。
+      </div>
+    </div>
+
+    <div class="card" id="eightCard" style="display:none;">
+      <h2 id="titleEight">八纲/八证（前端粗判）</h2>
+      <div class="result-box" id="eightBox"></div>
     </div>
   </div>
 
-  <!-- RIGHT -->
-  <div class="side-wrapper">
-    <div class="card">
-      <h2 id="eightTitle">八纲/八证（前端粗判）</h2>
-      <div class="hint" id="eightHint">这是用于自我复核的“粗筛”，不是诊断。</div>
+  <script>
+    // ===== 0) API 配置 =====
+    const ANALYZE_URL = "https://tcmai-api.vercel.app/api/analyze";
+    const SYMPTOMS_URL = "https://tcmai-api.vercel.app/api/symptoms";
 
-      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;">
-        <span class="pill" id="biaoLi">表/里：未判</span>
-        <span class="pill" id="hanRe">寒/热：未判</span>
-        <span class="pill" id="xuShi">虚/实：未判</span>
-        <span class="pill" id="yinYang">阴/阳：未判</span>
-      </div>
-
-      <div class="result-box" style="margin-top:10px;">
-        <div class="result-section"><span class="result-label" id="eightWhyTitle">依据：</span></div>
-        <div id="eightWhy" class="hint">请选择症状后显示。</div>
-      </div>
-    </div>
-  </div>
-
-<script>
-  // ===== 0) 后端 API 地址 =====
-  const API_URL = "https://tcmai-api.vercel.app/api/analyze";
-
-  const UI_TEXT = {
-    zh: {
-      titleRegion:"部位选择", titleSymptoms:"症状多选（按部位）",
-      currentRegion:"当前部位：", selected:"当前已选择症状：",
-      noneSelected:"暂未选择任何症状。", analyze:"生成辨证建议（从后端）",
-      analyzing:"正在向后端请求…", resultTitle:"辨证结果示意",
-      resultHint:"请选择多个症状后，点击“生成辨证建议”查看示意性分析。",
-      need2:"请至少选择 2 条症状再生成辨证建议。",
-      tip:"温馨提示：此工具仅用于中医理论学习和示意，不用于真实诊断或处方。",
-      hintLeft:"提示：点击部位按钮或人形图切换部位，再多选症状。",
-      eightTitle:"八纲/八证（前端粗判）", eightHint:"这是用于自我复核的“粗筛”，不是诊断。",
-      whyTitle:"依据："
-    },
-    en: {
-      titleRegion:"Region", titleSymptoms:"Symptoms (by region)",
-      currentRegion:"Current region: ", selected:"Selected symptoms:",
-      noneSelected:"None selected.", analyze:"Analyze (from backend)",
-      analyzing:"Requesting backend…", resultTitle:"Result (educational)",
-      resultHint:"Select multiple symptoms, then click Analyze to see an educational summary.",
-      need2:"Please select at least 2 symptoms.",
-      tip:"Note: this tool is for educational TCM discussion only, not diagnosis or prescription.",
-      hintLeft:"Tip: click region buttons (or body map) to switch, then pick multiple symptoms.",
-      eightTitle:"Eight Principles (rough check)", eightHint:"A rough self-check, not diagnosis.",
-      whyTitle:"Evidence:"
-    }
-  };
-
-  // ✅ 症状唯一数据源：带 id（后端要用！）
-  const SYMPTOMS = [
-    // chest
-    { id:"palpitations", zh:"心悸", en:"Palpitations", regions:["chest"] },
-    { id:"yellow_sticky_phlegm", zh:"痰黄黏", en:"Yellow sticky phlegm", regions:["chest"] },
-
-    // stool/urine
-    { id:"loose_stool", zh:"便溏", en:"Loose stool", regions:["stool"] },
-    { id:"clear_long_urine", zh:"小便清长", en:"Clear copious urine", regions:["urine"] },
-    { id:"short_red_urine", zh:"小便短赤", en:"Dark scanty urine", regions:["urine"] },
-    { id:"constipation", zh:"大便干结", en:"Dry constipation", regions:["stool"] },
-
-    // whole
-    { id:"cold_aversion", zh:"畏寒肢冷", en:"Aversion to cold / cold limbs", regions:["whole"] },
-    { id:"cold_limbs", zh:"手脚冰凉", en:"Cold limbs", regions:["whole"] },
-    { id:"five_center_heat", zh:"五心烦热", en:"Five-center heat", regions:["whole"] },
-    { id:"palm_sole_heat", zh:"手足心热", en:"Heat in palms/soles", regions:["whole"] },
-    { id:"fatigue", zh:"乏力", en:"Fatigue", regions:["whole"] },
-    { id:"lazy_low_energy", zh:"神疲懒言", en:"Lassitude / low speech", regions:["whole"] },
-    { id:"pale_complexion", zh:"面色少华", en:"Pale complexion", regions:["whole"] },
-    { id:"flushed_face", zh:"面色潮红", en:"Flushed complexion", regions:["whole"] },
-    { id:"restlessness", zh:"烦躁", en:"Restlessness", regions:["whole"] },
-  ];
-
-  const REGION_META = [
-    { key:"chest", zh:"胸部 / 心肺", en:"Chest" },
-    { key:"stool", zh:"大便", en:"Stool" },
-    { key:"urine", zh:"小便", en:"Urine" },
-    { key:"whole", zh:"全身 / 体质", en:"Whole body" },
-  ];
-
-  let lang="zh";
-  let currentRegionKey="whole";
-  let selectedSymptoms=[]; // {regionKey, symptomId}
-
-  const regionButtonsEl=document.getElementById("regionButtons");
-  const symptomListEl=document.getElementById("symptomList");
-  const selectedSummaryEl=document.getElementById("selectedSummary");
-  const currentRegionTitleEl=document.getElementById("currentRegionTitle");
-  const analyzeBtn=document.getElementById("analyzeBtn");
-  const analysisResultEl=document.getElementById("analysisResult");
-  const debugPayloadEl=document.getElementById("debugPayload");
-  const countPill=document.getElementById("countPill");
-  const apiPill=document.getElementById("apiPill");
-
-  const biaoLiEl=document.getElementById("biaoLi");
-  const hanReEl=document.getElementById("hanRe");
-  const xuShiEl=document.getElementById("xuShi");
-  const yinYangEl=document.getElementById("yinYang");
-  const eightWhy=document.getElementById("eightWhy");
-
-  function t(k){return UI_TEXT[lang][k];}
-  function regionLabel(key){
-    const r=REGION_META.find(x=>x.key===key);
-    return r ? (lang==="zh"?r.zh:r.en) : key;
-  }
-  function findSymptomById(id){return SYMPTOMS.find(x=>x.id===id);}
-  function symptomsForRegion(key){
-    return SYMPTOMS.filter(s=>(s.regions||[]).includes(key));
-  }
-  function isSelected(regionKey, symptomId){
-    return selectedSymptoms.some(x=>x.regionKey===regionKey && x.symptomId===symptomId);
-  }
-  function toggleSymptom(regionKey, symptomId){
-    const idx=selectedSymptoms.findIndex(x=>x.regionKey===regionKey && x.symptomId===symptomId);
-    if(idx>=0) selectedSymptoms.splice(idx,1);
-    else selectedSymptoms.push({regionKey, symptomId});
-    renderSymptomList();
-    renderSelectedSummary();
-    renderEight();
-  }
-
-  function renderRegionButtons(){
-    regionButtonsEl.innerHTML="";
-    for(const r of REGION_META){
-      const btn=document.createElement("button");
-      btn.className="region-btn"+(r.key===currentRegionKey?" active":"");
-      btn.textContent=lang==="zh"?r.zh:r.en;
-      btn.onclick=()=>selectRegion(r.key);
-      regionButtonsEl.appendChild(btn);
-    }
-  }
-
-  function updateTexts(){
-    document.getElementById("leftTitle").textContent=t("titleRegion");
-    document.getElementById("rightTitle").textContent=t("titleSymptoms");
-    document.getElementById("selectedTitle").textContent=t("selected");
-    document.getElementById("resultTitle").textContent=t("resultTitle");
-    document.getElementById("rightHint").textContent=t("tip");
-    document.getElementById("leftHint").textContent=t("hintLeft");
-    document.getElementById("eightTitle").textContent=t("eightTitle");
-    document.getElementById("eightHint").textContent=t("eightHint");
-    document.getElementById("eightWhyTitle").textContent=t("whyTitle");
-    analyzeBtn.textContent=t("analyze");
-    apiPill.textContent=`API: ${API_URL.replace(/^https?:\/\//,'')}`;
-  }
-
-  function updateCurrentRegionTitle(){
-    currentRegionTitleEl.textContent=`${t("currentRegion")}${regionLabel(currentRegionKey)} (${lang==="zh"?"可多选":"multi-select"})`;
-  }
-
-  function renderSymptomList(){
-    const list=symptomsForRegion(currentRegionKey);
-    symptomListEl.innerHTML="";
-    const container=document.createElement("div");
-    container.className="symptom-tags";
-    for(const s of list){
-      const tag=document.createElement("button");
-      tag.type="button";
-      tag.className="symptom-tag"+(isSelected(currentRegionKey,s.id)?" selected":"");
-      tag.textContent=lang==="zh"?s.zh:s.en;
-      tag.onclick=()=>toggleSymptom(currentRegionKey,s.id);
-      container.appendChild(tag);
-    }
-    symptomListEl.appendChild(container);
-  }
-
-  function renderSelectedSummary(){
-    countPill.textContent = (lang==="zh" ? `已选：${selectedSymptoms.length}` : `Selected: ${selectedSymptoms.length}`);
-    if(!selectedSymptoms.length){
-      selectedSummaryEl.textContent=t("noneSelected");
-      debugPayloadEl.textContent="{}";
-      renderAnalysisResult(null);
-      return;
-    }
-
-    const byRegion={};
-    for(const item of selectedSymptoms){
-      const label=regionLabel(item.regionKey);
-      if(!byRegion[label]) byRegion[label]=[];
-      const s=findSymptomById(item.symptomId);
-      byRegion[label].push(lang==="zh" ? (s?s.zh:item.symptomId) : (s?s.en:item.symptomId));
-    }
-
-    const lines=Object.keys(byRegion).map(label=>{
-      const uniq=Array.from(new Set(byRegion[label]));
-      return `${label}: ${uniq.join(lang==="zh"?"、":", ")}`;
-    });
-
-    selectedSummaryEl.innerHTML=lines.map(line=>`<div class="summary-item">${line}</div>`).join("");
-
-    const payload = {
-      symptoms: selectedSymptoms.map(s=>({ id:s.symptomId, region: regionLabel(s.regionKey) })),
-      lang
-    };
-    debugPayloadEl.textContent = JSON.stringify(payload, null, 2);
-  }
-
-  function renderAnalysisResult(r){
-    if(!r){
-      analysisResultEl.textContent=t("resultHint");
-      return;
-    }
-    let html="";
-    if(r.title) html+=`<div class="result-title">${r.title}</div>`;
-    if(r.pattern) html+=`<div class="result-section"><span class="result-label">Pattern:</span> ${r.pattern}</div>`;
-    if(r.explanation) html+=`<div class="result-section"><span class="result-label">Explanation:</span> ${r.explanation}</div>`;
-    if(r.principle) html+=`<div class="result-section"><span class="result-label">Principle:</span> ${r.principle}</div>`;
-    if(r.acupuncture) html+=`<div class="result-section"><span class="result-label">Acupuncture:</span> ${r.acupuncture}</div>`;
-    if(r.herbal) html+=`<div class="result-section"><span class="result-label">Herbal:</span> ${r.herbal}</div>`;
-    if(r.aiNotes) html+=`<div class="ai-note"><span class="result-label">${lang==="zh"?"AI：":"AI:"}</span> ${r.aiNotes}</div>`;
-    if(r.aiError) html+=`<div class="ai-error"><span class="result-label">${lang==="zh"?"AI 提示：":"AI message:"}</span> ${r.aiError}</div>`;
-    if(r.warning) html+=`<div class="result-warning">${r.warning}</div>`;
-    analysisResultEl.innerHTML=html;
-  }
-
-  // —— 八纲：前端粗判（用 symptomId）——
-  function renderEight(){
-    if(!selectedSymptoms.length){
-      biaoLiEl.textContent = (lang==="zh"?"表/里：未判":"Exterior/Interior: N/A");
-      hanReEl.textContent  = (lang==="zh"?"寒/热：未判":"Cold/Heat: N/A");
-      xuShiEl.textContent  = (lang==="zh"?"虚/实：未判":"Def/Excess: N/A");
-      yinYangEl.textContent= (lang==="zh"?"阴/阳：未判":"Yin/Yang: N/A");
-      eightWhy.textContent = (lang==="zh"?"请选择症状后显示。":"Pick symptoms to see reasoning.");
-      return;
-    }
-
-    const ids = selectedSymptoms.map(x=>x.symptomId);
-    const heat = [];
-    const cold = [];
-    const interior = [];
-    const deficiency = [];
-    const excess = [];
-
-    const HEAT = ["yellow_sticky_phlegm","short_red_urine","constipation","five_center_heat","restlessness","flushed_face","palm_sole_heat"];
-    const COLD = ["cold_aversion","cold_limbs","clear_long_urine","loose_stool"];
-    const INTERIOR = ["loose_stool","clear_long_urine","short_red_urine","constipation"];
-    const DEF = ["fatigue","lazy_low_energy","pale_complexion"];
-    const EXC = ["yellow_sticky_phlegm","palpitations","restlessness"];
-
-    for(const id of ids){
-      if(HEAT.includes(id)) heat.push(id);
-      if(COLD.includes(id)) cold.push(id);
-      if(INTERIOR.includes(id)) interior.push(id);
-      if(DEF.includes(id)) deficiency.push(id);
-      if(EXC.includes(id)) excess.push(id);
-    }
-
-    const hanRe = heat.length>cold.length ? "热" : (cold.length>heat.length ? "寒" : "寒热不明");
-    const biaoLi = interior.length>=1 ? "里" : "表里不明";
-    const xuShi = deficiency.length>=2 ? "偏虚" : (excess.length>=2 ? "偏实" : "虚实夹杂/未明");
-    let yinYang = "阴阳不明";
-    if(hanRe==="寒" && xuShi==="偏虚") yinYang="偏阳虚";
-    else if(hanRe==="热" && xuShi==="偏虚") yinYang="偏阴虚/虚热";
-    else if(hanRe==="热" && xuShi==="偏实") yinYang="偏阳盛/实热";
-    else if(hanRe==="寒" && xuShi==="偏实") yinYang="偏寒实";
-
-    biaoLiEl.textContent = (lang==="zh"?`表/里：${biaoLi}`:`Exterior/Interior: ${biaoLi}`);
-    hanReEl.textContent  = (lang==="zh"?`寒/热：${hanRe}`:`Cold/Heat: ${hanRe}`);
-    xuShiEl.textContent  = (lang==="zh"?`虚/实：${xuShi}`:`Def/Excess: ${xuShi}`);
-    yinYangEl.textContent= (lang==="zh"?`阴/阳：${yinYang}`:`Yin/Yang: ${yinYang}`);
-
-    const toName = (id) => {
-      const s = findSymptomById(id);
-      return lang==="zh" ? (s?s.zh:id) : (s?s.en:id);
+    // ===== 1) i18n =====
+    const UI_TEXT = {
+      zh: {
+        titleRegion: "部位选择",
+        hintLeft: "提示：点击部位按钮切换部位，再多选症状。",
+        titleSymptoms: "症状多选（按部位）",
+        currentRegion: "当前部位：",
+        titleSelected: "当前已选择症状：",
+        noneSelected: "暂未选择任何症状。",
+        analyze: "生成辨证建议（从后端）",
+        analyzing: "正在向后端请求…",
+        tipRight: "温馨提示：此工具仅用于中医理论学习和示意，不用于真实诊断或处方。",
+        titleResult: "辨证结果示意",
+        resultHint: "请选择多个症状后，点击“生成辨证建议”查看示意性分析。",
+        need2: "请至少选择 2 条症状再生成辨证建议。",
+        warn: "请求失败",
+        debugTitle: "调试：查看发送给后端的 payload",
+        titleEight: "八纲/八证（后端判定）",
+        eightIntro: "这是用于自我复核的“粗筛”，不是诊断。"
+      },
+      en: {
+        titleRegion: "Region",
+        hintLeft: "Tip: switch regions, then multi-select symptoms.",
+        titleSymptoms: "Symptoms (by region)",
+        currentRegion: "Current region: ",
+        titleSelected: "Selected symptoms:",
+        noneSelected: "None selected.",
+        analyze: "Analyze (from backend)",
+        analyzing: "Requesting backend…",
+        tipRight: "Note: educational TCM discussion only, not diagnosis or prescription.",
+        titleResult: "Result (educational)",
+        resultHint: "Select multiple symptoms, then click Analyze to see an educational summary.",
+        need2: "Please select at least 2 symptoms.",
+        warn: "Request failed",
+        debugTitle: "Debug: payload sent to backend",
+        titleEight: "Eight Principles (backend)",
+        eightIntro: "This is a coarse self-check, not a diagnosis."
+      }
     };
 
-    const parts = [];
-    if(interior.length) parts.push((lang==="zh"?"里象参考：":"Interior: ")+interior.map(toName).join(lang==="zh"?"、":", "));
-    if(heat.length) parts.push((lang==="zh"?"热象参考：":"Heat: ")+heat.map(toName).join(lang==="zh"?"、":", "));
-    if(cold.length) parts.push((lang==="zh"?"寒象参考：":"Cold: ")+cold.map(toName).join(lang==="zh"?"、":", "));
-    if(deficiency.length) parts.push((lang==="zh"?"虚象参考：":"Def: ")+deficiency.map(toName).join(lang==="zh"?"、":", "));
-    if(excess.length) parts.push((lang==="zh"?"实象参考：":"Excess: ")+excess.map(toName).join(lang==="zh"?"、":", "));
-    eightWhy.textContent = parts.join(" | ");
-  }
+    // ===== 2) Region 定义（顺序 + 显示名）=====
+    // 关键：这些 key 必须与你后端 SYMPTOMS[].regions 一致
+    const REGION_META = [
+      { key: "head", zh: "头部", en: "Head" },
+      { key: "eye", zh: "眼", en: "Eyes" },
+      { key: "ear", zh: "耳", en: "Ears" },
+      { key: "nose", zh: "鼻", en: "Nose" },
+      { key: "throat", zh: "咽喉", en: "Throat" },
+      { key: "mouth", zh: "口腔/口渴", en: "Mouth/Thirst" },
+      { key: "chest", zh: "胸部 / 心肺", en: "Chest" },
+      { key: "upperAbd", zh: "上腹 / 胃脘", en: "Upper abdomen" },
+      { key: "midAbd", zh: "中腹", en: "Mid abdomen" },
+      { key: "lowerAbd", zh: "下腹 / 月经", en: "Lower abdomen / Menses" },
+      { key: "stool", zh: "大便", en: "Stool" },
+      { key: "urine", zh: "小便", en: "Urine" },
+      { key: "whole", zh: "全身 / 体质", en: "Whole body" }
+    ];
 
-  function selectRegion(key){
-    currentRegionKey=key;
-    renderRegionButtons();
-    updateTexts();
-    updateCurrentRegionTitle();
-    renderSymptomList();
-  }
-  window.selectRegion = selectRegion;
+    // ===== 3) State =====
+    let lang = "zh";
+    let currentRegionKey = "head";
 
-  async function handleAnalyze(){
-    if(selectedSymptoms.length<2){
-      alert(t("need2"));
-      return;
+    // 后端返回：{ regions: { chest: [{id,zh,en}, ...], ... } }
+    let regionsData = {}; // mapping: regionKey -> symptom[]
+    // 已选：用 id（因为 analyze 后端只认 id）
+    let selected = []; // [{ regionKey, id }]
+
+    // ===== 4) DOM =====
+    const regionButtonsEl = document.getElementById("regionButtons");
+    const symptomListEl = document.getElementById("symptomList");
+    const selectedSummaryEl = document.getElementById("selectedSummary");
+    const currentRegionTitleEl = document.getElementById("currentRegionTitle");
+    const analyzeBtn = document.getElementById("analyzeBtn");
+    const analysisResultEl = document.getElementById("analysisResult");
+    const debugPayloadEl = document.getElementById("debugPayload");
+    const eightCardEl = document.getElementById("eightCard");
+    const eightBoxEl = document.getElementById("eightBox");
+
+    const btnZh = document.getElementById("btnZh");
+    const btnEn = document.getElementById("btnEn");
+
+    function t(k) { return UI_TEXT[lang][k]; }
+
+    function regionLabel(key) {
+      const r = REGION_META.find(x => x.key === key);
+      return r ? (lang === "zh" ? r.zh : r.en) : key;
     }
 
-    analyzeBtn.disabled=true;
-    analyzeBtn.textContent=t("analyzing");
+    function setTexts() {
+      document.getElementById("titleRegion").textContent = t("titleRegion");
+      document.getElementById("hintLeft").textContent = t("hintLeft");
+      document.getElementById("titleSymptoms").textContent = t("titleSymptoms");
+      document.getElementById("titleSelected").textContent = t("titleSelected");
+      document.getElementById("tipRight").textContent = t("tipRight");
+      document.getElementById("titleResult").textContent = t("titleResult");
+      document.getElementById("debugTitle").textContent = t("debugTitle");
+      document.getElementById("titleEight").textContent = t("titleEight");
 
-    try{
-      const payload = {
-        symptoms: selectedSymptoms.map(s=>({ id:s.symptomId, region: regionLabel(s.regionKey) })),
-        lang
-      };
-      debugPayloadEl.textContent = JSON.stringify(payload, null, 2);
+      analyzeBtn.textContent = t("analyze");
+      btnZh.classList.toggle("active", lang === "zh");
+      btnEn.classList.toggle("active", lang === "en");
+    }
 
-      const resp = await fetch(API_URL, {
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify(payload)
+    // ===== 5) Load symptom list from backend =====
+    async function loadSymptoms() {
+      const url = `${SYMPTOMS_URL}?lang=${encodeURIComponent(lang)}`;
+      document.getElementById("apiInfo").textContent = `API: ${new URL(ANALYZE_URL).host}/api/analyze`;
+      const resp = await fetch(url);
+      const data = await resp.json();
+      regionsData = (data && data.regions) ? data.regions : {};
+    }
+
+    // ===== 6) Render Regions =====
+    function renderRegionButtons() {
+      regionButtonsEl.innerHTML = "";
+      for (const r of REGION_META) {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "region-btn" + (r.key === currentRegionKey ? " active" : "");
+        btn.textContent = lang === "zh" ? r.zh : r.en;
+
+        // 如果后端这个 region 目前完全没有症状，也照样显示（你后续随时能加）
+        btn.onclick = () => selectRegion(r.key);
+
+        regionButtonsEl.appendChild(btn);
+      }
+    }
+
+    function updateCurrentRegionTitle() {
+      currentRegionTitleEl.textContent = `${t("currentRegion")}${regionLabel(currentRegionKey)} (${lang === "zh" ? "可多选" : "multi-select"})`;
+    }
+
+    // ===== 7) Render Symptoms =====
+    function getSymptomsForCurrentRegion() {
+      const list = regionsData[currentRegionKey] || [];
+      // 去重（按 id）
+      const seen = new Set();
+      const out = [];
+      for (const s of list) {
+        if (!s || !s.id) continue;
+        if (seen.has(s.id)) continue;
+        seen.add(s.id);
+        out.push(s);
+      }
+      return out;
+    }
+
+    function isSelected(regionKey, id) {
+      return selected.some(x => x.regionKey === regionKey && x.id === id);
+    }
+
+    function toggleSymptom(regionKey, symptom) {
+      const id = symptom.id;
+      const idx = selected.findIndex(x => x.regionKey === regionKey && x.id === id);
+      if (idx >= 0) selected.splice(idx, 1);
+      else selected.push({ regionKey, id });
+      renderSymptomList();
+      renderSelectedSummary();
+    }
+
+    function renderSymptomList() {
+      symptomListEl.innerHTML = "";
+
+      const list = getSymptomsForCurrentRegion();
+
+      if (!list.length) {
+        const empty = document.createElement("div");
+        empty.className = "hint";
+        empty.textContent = lang === "zh"
+          ? "这个部位暂时没有症状（去后端 lib/data 里给这个 region 加一些 SYMPTOMS 即可）。"
+          : "No symptoms yet for this region (add SYMPTOMS in backend lib/data).";
+        symptomListEl.appendChild(empty);
+        return;
+      }
+
+      const container = document.createElement("div");
+      container.className = "symptom-tags";
+
+      for (const s of list) {
+        const tag = document.createElement("button");
+        tag.type = "button";
+        tag.className = "symptom-tag" + (isSelected(currentRegionKey, s.id) ? " selected" : "");
+        tag.textContent = lang === "zh" ? (s.zh || s.id) : (s.en || s.zh || s.id);
+        tag.onclick = () => toggleSymptom(currentRegionKey, s);
+        container.appendChild(tag);
+      }
+
+      symptomListEl.appendChild(container);
+    }
+
+    function renderSelectedSummary() {
+      const countEl = document.getElementById("selectedCount");
+      countEl.textContent = (lang === "zh" ? "已选：" : "Selected: ") + selected.length;
+
+      if (!selected.length) {
+        selectedSummaryEl.textContent = t("noneSelected");
+        return;
+      }
+
+      // build quick lookup: id -> {zh,en}
+      const byId = new Map();
+      for (const rk of Object.keys(regionsData)) {
+        for (const s of (regionsData[rk] || [])) {
+          if (s && s.id) byId.set(s.id, s);
+        }
+      }
+
+      const byRegion = {};
+      for (const item of selected) {
+        const label = regionLabel(item.regionKey);
+        if (!byRegion[label]) byRegion[label] = [];
+        const s = byId.get(item.id);
+        const name = lang === "zh" ? (s?.zh || item.id) : (s?.en || s?.zh || item.id);
+        byRegion[label].push(name);
+      }
+
+      const lines = Object.keys(byRegion).map(label => {
+        const uniq = Array.from(new Set(byRegion[label]));
+        return `${label}: ${uniq.join(lang === "zh" ? "、" : ", ")}`;
       });
 
-      if(!resp.ok){
-        const text = await resp.text();
-        renderAnalysisResult({ title: "请求失败", explanation:`HTTP ${resp.status}`, warning:text });
-      } else {
-        const data = await resp.json();
-        renderAnalysisResult(data);
-      }
-    }catch(err){
-      renderAnalysisResult({ title:"请求失败", explanation: err?.message || String(err) });
-    }finally{
-      analyzeBtn.disabled=false;
-      analyzeBtn.textContent=t("analyze");
+      selectedSummaryEl.innerHTML = lines.map(line => `<div class="summary-item">${line}</div>`).join("");
     }
-  }
 
-  analyzeBtn.addEventListener("click", handleAnalyze);
+    // ===== 8) Result rendering =====
+    function renderAnalysisResult(r) {
+      if (!r) {
+        analysisResultEl.textContent = t("resultHint");
+        return;
+      }
 
-  // language switch
-  const btnZh=document.getElementById("btnZh");
-  const btnEn=document.getElementById("btnEn");
-  btnZh.onclick=()=>{lang="zh"; btnZh.classList.add("active"); btnEn.classList.remove("active"); updateTexts(); renderRegionButtons(); renderSymptomList(); renderSelectedSummary(); renderEight(); renderAnalysisResult(null);};
-  btnEn.onclick=()=>{lang="en"; btnEn.classList.add("active"); btnZh.classList.remove("active"); updateTexts(); renderRegionButtons(); renderSymptomList(); renderSelectedSummary(); renderEight(); renderAnalysisResult(null);};
+      let html = "";
+      if (r.title) html += `<div class="result-title">${r.title}</div>`;
+      if (r.pattern) html += `<div class="result-section"><span class="result-label">${lang === "zh" ? "Pattern：" : "Pattern: "}</span>${r.pattern}</div>`;
+      if (r.explanation) html += `<div class="result-section"><span class="result-label">${lang === "zh" ? "Explanation：" : "Explanation: "}</span>${r.explanation}</div>`;
+      if (r.principle) html += `<div class="result-section"><span class="result-label">${lang === "zh" ? "Principle：" : "Principle: "}</span>${r.principle}</div>`;
+      if (r.acupuncture) html += `<div class="result-section"><span class="result-label">${lang === "zh" ? "Acupuncture：" : "Acupuncture: "}</span>${r.acupuncture}</div>`;
+      if (r.herbal) html += `<div class="result-section"><span class="result-label">${lang === "zh" ? "Herbal：" : "Herbal: "}</span>${r.herbal}</div>`;
 
-  // init
-  updateTexts();
-  renderRegionButtons();
-  selectRegion("whole");
-  renderSelectedSummary();
-  renderEight();
-  renderAnalysisResult(null);
-</script>
+      if (r.aiNotes) html += `<div class="ai-note"><span class="result-label">${lang === "zh" ? "AI：" : "AI: "}</span>${r.aiNotes}</div>`;
+      if (r.aiError) html += `<div class="ai-error"><span class="result-label">${lang === "zh" ? "AI 提示：" : "AI message: "}</span>${r.aiError}</div>`;
+      if (r.warning) html += `<div class="result-warning">${r.warning}</div>`;
+
+      analysisResultEl.innerHTML = html;
+    }
+
+    function renderEightPrinciplesBlock(r) {
+      // 后端 analyze.js 返回：eightPrinciples / eightEvidence
+      if (!r || !r.eightPrinciples) {
+        eightCardEl.style.display = "none";
+        eightBoxEl.innerHTML = "";
+        return;
+      }
+
+      const ep = r.eightPrinciples;
+      const evidence = Array.isArray(r.eightEvidence) ? r.eightEvidence : [];
+
+      const lines = [];
+      lines.push(`<div class="small">${t("eightIntro")}</div>`);
+      lines.push(`<div class="result-section"><span class="result-label">${lang === "zh" ? "表/里：" : "Exterior/Interior: "}</span>${ep.interiorExterior}</div>`);
+      lines.push(`<div class="result-section"><span class="result-label">${lang === "zh" ? "寒/热：" : "Cold/Heat: "}</span>${ep.coldHeat}</div>`);
+      lines.push(`<div class="result-section"><span class="result-label">${lang === "zh" ? "虚/实：" : "Def/Excess: "}</span>${ep.defExcess}</div>`);
+      lines.push(`<div class="result-section"><span class="result-label">${lang === "zh" ? "阴/阳：" : "Yin/Yang: "}</span>${ep.yinYang}</div>`);
+
+      if (evidence.length) {
+        const ev = evidence.slice(0, 14).map(x => `• ${x}`).join("<br/>");
+        lines.push(`<div class="result-section"><span class="result-label">${lang === "zh" ? "依据：" : "Evidence: "}</span><div class="small" style="margin-top:4px;">${ev}</div></div>`);
+      }
+
+      eightBoxEl.innerHTML = lines.join("");
+      eightCardEl.style.display = "block";
+    }
+
+    // ===== 9) Actions =====
+    function selectRegion(key) {
+      currentRegionKey = key;
+      renderRegionButtons();
+      updateCurrentRegionTitle();
+      renderSymptomList();
+    }
+
+    async function handleAnalyze() {
+      if (selected.length < 2) {
+        alert(t("need2"));
+        return;
+      }
+
+      analyzeBtn.disabled = true;
+      analyzeBtn.textContent = t("analyzing");
+
+      try {
+        const payload = {
+          lang,
+          symptoms: selected.map(x => ({ id: x.id })), // ★关键：只发 id，后端才会算
+          // 你要的话还能加 context/tongue/pulse
+          context: {},
+          tongue: {},
+          pulse: {}
+        };
+
+        debugPayloadEl.textContent = JSON.stringify(payload, null, 2);
+
+        const resp = await fetch(ANALYZE_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        if (!resp.ok) {
+          const text = await resp.text();
+          renderAnalysisResult({
+            title: t("warn"),
+            explanation: `HTTP ${resp.status}`,
+            warning: text
+          });
+          renderEightPrinciplesBlock(null);
+        } else {
+          const data = await resp.json();
+          renderAnalysisResult(data);
+          renderEightPrinciplesBlock(data);
+        }
+      } catch (err) {
+        renderAnalysisResult({
+          title: t("warn"),
+          explanation: err?.message || String(err)
+        });
+        renderEightPrinciplesBlock(null);
+      } finally {
+        analyzeBtn.disabled = false;
+        analyzeBtn.textContent = t("analyze");
+      }
+    }
+
+    analyzeBtn.addEventListener("click", handleAnalyze);
+
+    // ===== 10) Language switching =====
+    btnZh.onclick = async () => {
+      lang = "zh";
+      setTexts();
+      await loadSymptoms();
+      // 保留已选 id，不清空
+      renderRegionButtons();
+      updateCurrentRegionTitle();
+      renderSymptomList();
+      renderSelectedSummary();
+      renderAnalysisResult(null);
+      renderEightPrinciplesBlock(null);
+    };
+
+    btnEn.onclick = async () => {
+      lang = "en";
+      setTexts();
+      await loadSymptoms();
+      renderRegionButtons();
+      updateCurrentRegionTitle();
+      renderSymptomList();
+      renderSelectedSummary();
+      renderAnalysisResult(null);
+      renderEightPrinciplesBlock(null);
+    };
+
+    // ===== init =====
+    (async function init() {
+      setTexts();
+      await loadSymptoms();
+      renderRegionButtons();
+      updateCurrentRegionTitle();
+      renderSymptomList();
+      renderSelectedSummary();
+      renderAnalysisResult(null);
+      renderEightPrinciplesBlock(null);
+      selectRegion("head");
+    })();
+  </script>
 </body>
 </html>
+
 
