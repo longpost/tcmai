@@ -24,8 +24,7 @@
       margin: 0;
       padding: 16px;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-        "Helvetica Neue", Arial, "Noto Sans", "PingFang SC", "Microsoft YaHei",
-        sans-serif;
+        "Helvetica Neue", Arial, "Noto Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
       background: radial-gradient(circle at top, #ffffff, var(--bg));
       color: var(--text-main);
       display: flex;
@@ -43,49 +42,16 @@
       min-width: 0;
     }
 
-    .left {
-      flex: 0 0 340px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      align-items: center;
-    }
-
-    .mid {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      min-width: 0;
-    }
-
-    .right {
-      flex: 0 0 420px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      min-width: 0;
-    }
+    .left { flex: 0 0 340px; display: flex; flex-direction: column; gap: 12px; align-items: center; }
+    .mid { flex: 1; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+    .right { flex: 0 0 420px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
 
     h1 { font-size: 1.05rem; margin: 0 0 6px; }
     h2 { font-size: 0.98rem; margin: 0 0 8px; }
     .muted { color: var(--text-secondary); font-size: 0.86rem; line-height: 1.4; }
 
-    .topbar {
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .lang-toggle {
-      display: inline-flex;
-      gap: 6px;
-      align-items: center;
-      font-size: 0.85rem;
-      color: var(--text-secondary);
-    }
+    .topbar { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .lang-toggle { display: inline-flex; gap: 6px; align-items: center; font-size: 0.85rem; color: var(--text-secondary); }
     .pill {
       border: 1px solid var(--border);
       padding: 4px 10px;
@@ -93,6 +59,7 @@
       background: #fafafa;
       cursor: pointer;
       transition: all 0.15s ease;
+      user-select: none;
     }
     .pill.active {
       border-color: var(--accent);
@@ -120,6 +87,20 @@
       font-weight: 600;
     }
 
+    .subgroup-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+      align-items: center;
+    }
+    .subgroup-title {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      margin-right: 4px;
+      user-select: none;
+    }
+
     svg {
       width: 100%;
       max-width: 380px;
@@ -134,12 +115,7 @@
     .svg-clickable:hover { fill: #f0f8ff; stroke: #99ccee; }
     .svg-label { font-size: 8px; fill: #888; pointer-events: none; }
 
-    .tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 6px;
-    }
+    .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
     .tag {
       font-size: 0.82rem;
       padding: 4px 10px;
@@ -159,11 +135,7 @@
       font-weight: 500;
     }
 
-    .summary {
-      font-size: 0.86rem;
-      color: var(--text-secondary);
-      line-height: 1.5;
-    }
+    .summary { font-size: 0.86rem; color: var(--text-secondary); line-height: 1.5; }
 
     .btn-primary {
       display: inline-flex;
@@ -187,7 +159,7 @@
     .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
 
     label { font-size: 0.82rem; color: var(--text-secondary); display: block; margin-bottom: 4px; }
-    select, input {
+    select {
       width: 100%;
       border: 1px solid var(--border);
       border-radius: 10px;
@@ -196,12 +168,7 @@
       font-size: 0.9rem;
     }
 
-    .result {
-      font-size: 0.9rem;
-      line-height: 1.55;
-      color: var(--text-main);
-      word-break: break-word;
-    }
+    .result { font-size: 0.9rem; line-height: 1.55; color: var(--text-main); word-break: break-word; }
     .result-title { font-weight: 700; margin-bottom: 6px; }
     .section { margin-top: 6px; }
     .label { font-weight: 700; }
@@ -302,6 +269,17 @@
     <div class="card">
       <h1 id="symptomTitle">症状多选（按部位）</h1>
       <div class="muted" id="currentRegionText">当前部位：</div>
+
+      <!-- NEW: subgroup bar -->
+      <div class="subgroup-bar" id="subgroupBar" style="display:none;">
+        <div class="subgroup-title" id="subgroupTitle">分组：</div>
+        <span class="pill active" id="sgAll">全部</span>
+        <span class="pill" id="sgEye">眼</span>
+        <span class="pill" id="sgEar">耳</span>
+        <span class="pill" id="sgThroat">咽喉</span>
+        <span class="pill" id="sgMouth">口</span>
+      </div>
+
       <div id="symptomList"></div>
 
       <div class="summary" style="margin-top:10px;">
@@ -428,15 +406,14 @@
       </div>
 
       <div class="muted" id="clinicalHint" style="margin-top:10px;">
-        这是给你自用复核的“关键证据面板”。不确定就留空，系统会降低置信度。
+        不确定就留空，系统会降低置信度；这是给你自用复核的“关键证据面板”。
       </div>
     </div>
   </div>
 
   <script>
     // ====== CONFIG ======
-    // 改成你的后端域名（tcmai-api vercel）
-    const API_BASE = "https://tcmai-api.vercel.app";
+    const API_BASE = "https://tcmai-api.vercel.app"; // ← 改成你的后端域名
     const SYMPTOMS_URL = () => `${API_BASE}/api/symptoms?lang=${currentLang}`;
     const ANALYZE_URL = () => `${API_BASE}/api/analyze`;
 
@@ -446,7 +423,7 @@
         title: "中医自用辨证复核",
         subtitle: "先八纲，再证素。用于自我复核，不做诊断处方。",
         regionTitle: "部位选择",
-        head: "头部", chest: "胸部", upper: "上腹", mid: "中腹", lower: "下腹", whole: "全身/四肢", stool: "大便", urine: "小便", tongue: "舌脉",
+        head: "头面五官", chest: "胸部", upper: "上腹", mid: "中腹", lower: "下腹", whole: "全身/四肢", stool: "大便", urine: "小便", tongue: "舌/脉",
         hint: "提示：点击部位切换症状；右侧填写舌/脉/病程等关键证据，然后生成结果用于自我复核。",
         symptomTitle: "症状多选（按部位）",
         currentRegion: "当前部位：",
@@ -456,13 +433,15 @@
         resultHeader: "结果",
         clinicalTitle: "关键证据（先八纲）",
         loading: "加载中…",
-        empty: "（该部位暂无症状）"
+        empty: "（该部位暂无症状）",
+        subgroup: "分组：",
+        all: "全部", eye: "眼", ear: "耳", throat: "咽喉", mouth: "口"
       },
       en: {
         title: "TCM Self-check",
         subtitle: "Eight Principles first, then pattern hints. For self-check only.",
         regionTitle: "Region",
-        head: "Head", chest: "Chest", upper: "Upper Abd", mid: "Mid Abd", lower: "Lower Abd", whole: "Whole", stool: "Stool", urine: "Urine", tongue: "Tongue/Pulse",
+        head: "Head & Senses", chest: "Chest", upper: "Upper Abd", mid: "Mid Abd", lower: "Lower Abd", whole: "Whole", stool: "Stool", urine: "Urine", tongue: "Tongue/Pulse",
         hint: "Tip: pick symptoms by region, fill key findings on the right, then generate hints for self-check.",
         symptomTitle: "Symptoms (by region)",
         currentRegion: "Current region: ",
@@ -472,17 +451,32 @@
         resultHeader: "Result",
         clinicalTitle: "Key Findings (Eight Principles first)",
         loading: "Loading…",
-        empty: "(No symptoms for this region)"
+        empty: "(No symptoms for this region)",
+        subgroup: "Group:",
+        all: "All", eye: "Eyes", ear: "Ears", throat: "Throat", mouth: "Mouth"
       }
     };
 
     let currentLang = "zh";
     let symptomCatalog = null; // from /api/symptoms
     let currentRegionKey = "head";
-    // selected symptom IDs (not names): [{ id, regionKey }]
-    let selected = [];
+    let selected = []; // [{ id, regionKey }]
+    let headSubgroup = "all"; // all|eye|ear|throat|mouth
 
     const el = (id) => document.getElementById(id);
+
+    function symptomLabel(symptom) {
+      if (!symptom) return "";
+      return currentLang === "zh" ? symptom.zh : symptom.en;
+    }
+
+    function getRegionLabel(key) {
+      const t = I18N[currentLang];
+      if (key === "upperAbd") return t.upper;
+      if (key === "midAbd") return t.mid;
+      if (key === "lowerAbd") return t.lower;
+      return t[key] || key;
+    }
 
     function applyLang() {
       const t = I18N[currentLang];
@@ -509,11 +503,14 @@
 
       el("langZh").classList.toggle("active", currentLang === "zh");
       el("langEn").classList.toggle("active", currentLang === "en");
-    }
 
-    function getRegionLabel(key) {
-      const t = I18N[currentLang];
-      return t[key] || key;
+      // subgroup bar text
+      el("subgroupTitle").textContent = t.subgroup;
+      el("sgAll").textContent = t.all;
+      el("sgEye").textContent = t.eye;
+      el("sgEar").textContent = t.ear;
+      el("sgThroat").textContent = t.throat;
+      el("sgMouth").textContent = t.mouth;
     }
 
     function renderRegionButtons() {
@@ -523,7 +520,7 @@
       keys.forEach((key) => {
         const btn = document.createElement("button");
         btn.className = "region-btn" + (key === currentRegionKey ? " active" : "");
-        btn.textContent = getRegionLabel(key === "upperAbd" ? "upper" : key === "midAbd" ? "mid" : key === "lowerAbd" ? "lower" : key);
+        btn.textContent = getRegionLabel(key);
         btn.onclick = () => selectRegion(key);
         regionButtonsEl.appendChild(btn);
       });
@@ -531,11 +528,20 @@
 
     function selectRegion(key) {
       currentRegionKey = key;
+
+      // show subgroup only when head
+      const bar = el("subgroupBar");
+      if (key === "head") {
+        bar.style.display = "flex";
+      } else {
+        bar.style.display = "none";
+        headSubgroup = "all";
+        updateSubgroupActive();
+      }
+
       renderRegionButtons();
+      el("currentRegionText").textContent = I18N[currentLang].currentRegion + getRegionLabel(key);
       renderSymptomList();
-      el("currentRegionText").textContent = I18N[currentLang].currentRegion + getRegionLabel(
-        key === "upperAbd" ? "upper" : key === "midAbd" ? "mid" : key === "lowerAbd" ? "lower" : key
-      );
     }
     window.selectRegion = selectRegion;
 
@@ -551,10 +557,48 @@
       renderSelectedSummary();
     }
 
-    function symptomLabel(symptom) {
-      if (!symptom) return "";
-      return currentLang === "zh" ? symptom.zh : symptom.en;
+    function renderSelectedSummary() {
+      const out = el("selectedSummary");
+      if (!selected.length || !symptomCatalog) {
+        out.textContent = "—";
+        return;
+      }
+      const idToSym = new Map();
+      Object.values(symptomCatalog.regions || {}).flat().forEach((s) => idToSym.set(s.id, s));
+      const items = selected.map((x) => idToSym.get(x.id)).filter(Boolean).map((s) => symptomLabel(s));
+      out.textContent = items.length ? items.join(currentLang==="zh" ? "、" : ", ") : "—";
     }
+
+    // ---------- NEW: Head subgroup classifier (no backend change needed) ----------
+    function classifyHeadSymptom(sym) {
+      const zh = (sym?.zh || "").trim();
+      const en = (sym?.en || "").toLowerCase();
+
+      // Eyes
+      if (/[目眼视泪红干]/.test(zh) || en.includes("eye") || en.includes("vision") || en.includes("blur") || en.includes("dry eye")) return "eye";
+      // Ears
+      if (/[耳鸣聋]/.test(zh) || en.includes("tinnitus") || en.includes("ear")) return "ear";
+      // Throat
+      if (/[咽喉痛干痒]/.test(zh) || en.includes("throat") || en.includes("pharyng") || en.includes("sore throat")) return "throat";
+      // Mouth
+      if (/[口苦口黏口干口渴口臭溃疡唇]/.test(zh) || en.includes("mouth") || en.includes("bitter") || en.includes("ulcer")) return "mouth";
+
+      return "all";
+    }
+
+    function updateSubgroupActive() {
+      const ids = ["sgAll","sgEye","sgEar","sgThroat","sgMouth"];
+      ids.forEach((id) => el(id).classList.remove("active"));
+      const map = { all: "sgAll", eye: "sgEye", ear: "sgEar", throat: "sgThroat", mouth: "sgMouth" };
+      el(map[headSubgroup]).classList.add("active");
+    }
+
+    // subgroup click handlers
+    el("sgAll").onclick = () => { headSubgroup="all"; updateSubgroupActive(); renderSymptomList(); };
+    el("sgEye").onclick = () => { headSubgroup="eye"; updateSubgroupActive(); renderSymptomList(); };
+    el("sgEar").onclick = () => { headSubgroup="ear"; updateSubgroupActive(); renderSymptomList(); };
+    el("sgThroat").onclick = () => { headSubgroup="throat"; updateSubgroupActive(); renderSymptomList(); };
+    el("sgMouth").onclick = () => { headSubgroup="mouth"; updateSubgroupActive(); renderSymptomList(); };
 
     function renderSymptomList() {
       const symptomListEl = el("symptomList");
@@ -565,10 +609,14 @@
         return;
       }
 
-      const list = (symptomCatalog.regions && symptomCatalog.regions[currentRegionKey]) ? symptomCatalog.regions[currentRegionKey] : [];
+      let list = (symptomCatalog.regions && symptomCatalog.regions[currentRegionKey])
+        ? symptomCatalog.regions[currentRegionKey]
+        : [];
 
-      const container = document.createElement("div");
-      container.className = "tags";
+      // NEW: if head, apply subgroup filter
+      if (currentRegionKey === "head" && headSubgroup !== "all") {
+        list = list.filter((s) => classifyHeadSymptom(s) === headSubgroup);
+      }
 
       if (!list.length) {
         const div = document.createElement("div");
@@ -577,6 +625,9 @@
         symptomListEl.appendChild(div);
         return;
       }
+
+      const container = document.createElement("div");
+      container.className = "tags";
 
       list.forEach((s) => {
         const b = document.createElement("button");
@@ -588,24 +639,6 @@
       });
 
       symptomListEl.appendChild(container);
-    }
-
-    function renderSelectedSummary() {
-      const out = el("selectedSummary");
-      if (!selected.length || !symptomCatalog) {
-        out.textContent = "—";
-        return;
-      }
-
-      const idToSym = new Map();
-      Object.values(symptomCatalog.regions || {}).flat().forEach((s) => idToSym.set(s.id, s));
-
-      const items = selected
-        .map((x) => idToSym.get(x.id))
-        .filter(Boolean)
-        .map((s) => symptomLabel(s));
-
-      out.textContent = items.length ? items.join("、") : "—";
     }
 
     function getCasePayload() {
@@ -638,7 +671,6 @@
       let html = "";
       if (r.title) html += `<div class="result-title">${r.title}</div>`;
 
-      // Eight principles
       if (r.eightPrinciples) {
         const ep = r.eightPrinciples;
         html += `<div class="section"><span class="label">${currentLang==="zh"?"八纲倾向":"Eight Principles"}：</span>${[
@@ -648,9 +680,7 @@
 
       if (Array.isArray(r.eightEvidence) && r.eightEvidence.length) {
         html += `<div class="evidence"><div style="font-weight:700;margin-bottom:4px;">${currentLang==="zh"?"依据（复核用）":"Evidence (for self-check)"}</div>`;
-        r.eightEvidence.slice(0, 10).forEach((e) => {
-          html += `<div class="evidence-item">• ${e}</div>`;
-        });
+        r.eightEvidence.slice(0, 12).forEach((e) => { html += `<div class="evidence-item">• ${e}</div>`; });
         html += `</div>`;
       }
 
@@ -672,8 +702,7 @@
       renderSymptomList();
       try {
         const resp = await fetch(SYMPTOMS_URL());
-        const data = await resp.json();
-        symptomCatalog = data;
+        symptomCatalog = await resp.json();
       } catch (e) {
         symptomCatalog = { regions: {} };
       }
@@ -694,12 +723,11 @@
 
       try {
         const payload = getCasePayload();
-        const resp = await fetch(ANALYZE_URL(), {
+        const resp = await fetch(ANALYZE_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
         });
-
         const data = await resp.json();
         renderResult(data);
       } catch (err) {
@@ -730,7 +758,9 @@
 
     // init
     applyLang();
+    updateSubgroupActive();
     loadSymptoms();
   </script>
 </body>
 </html>
+
