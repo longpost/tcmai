@@ -2,504 +2,435 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <title>TCM Self-check (Educational)</title>
+  <title>TCM Self-check</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    :root {
-      --bg: #f5f5f7;
-      --card-bg: #ffffff;
-      --border: #e0e0e0;
-      --accent: #0077b6;
-      --accent-soft: rgba(0, 119, 182, 0.08);
-      --danger: #b00020;
-      --text-main: #222222;
-      --text-secondary: #555555;
-      --tag-bg: #f0f0f3;
-      --tag-selected-bg: #0077b6;
-      --tag-selected-text: #ffffff;
+    :root{
+      --bg:#f5f5f7; --card:#fff; --border:#e6e6e6;
+      --accent:#0077b6; --accentSoft:rgba(0,119,182,.08);
+      --text:#222; --muted:#666; --danger:#b00020;
+      --chip:#f0f0f3;
     }
-
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      padding: 16px;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-        "Helvetica Neue", Arial, "Noto Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
-      background: radial-gradient(circle at top, #ffffff, var(--bg));
-      color: var(--text-main);
-      display: flex;
-      flex-direction: row;
-      gap: 16px;
-      min-height: 100vh;
+    *{box-sizing:border-box}
+    body{
+      margin:0; padding:16px;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,"PingFang SC","Microsoft YaHei",sans-serif;
+      background: radial-gradient(circle at top,#fff,var(--bg));
+      color:var(--text);
+      display:flex; gap:16px; min-height:100vh;
     }
-
-    .card {
-      background: var(--card-bg);
-      border-radius: 16px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
-      border: 1px solid var(--border);
-      padding: 16px 18px;
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:16px;
+      box-shadow:0 8px 20px rgba(0,0,0,.04);
+      padding:16px 18px;
     }
-
-    .body-wrapper {
-      flex: 0 0 320px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
+    .left{flex:0 0 340px; display:flex; flex-direction:column; gap:12px}
+    .right{flex:1; display:flex; flex-direction:column; gap:12px; min-width:0}
+    h1{font-size:1.08rem; margin:0 0 8px}
+    h2{font-size:1rem; margin:0 0 8px}
+    .row{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+    .btn{
+      border-radius:999px;
+      border:1px solid var(--border);
+      padding:6px 12px;
+      background:#fafafa;
+      color:var(--muted);
+      cursor:pointer;
+      transition:.15s;
+      user-select:none;
+      font-size:.86rem;
     }
-
-    .right-wrapper {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      min-width: 0;
+    .btn.active{border-color:var(--accent); background:var(--accentSoft); color:var(--accent); font-weight:600}
+    .chips{display:flex; flex-wrap:wrap; gap:6px}
+    .chip{
+      border-radius:999px;
+      border:1px solid var(--border);
+      padding:5px 10px;
+      background:var(--chip);
+      color:var(--muted);
+      cursor:pointer;
+      user-select:none;
+      font-size:.86rem;
+      white-space:nowrap;
     }
-
-    h1 { font-size: 1.15rem; margin: 0 0 4px; }
-    h2 { font-size: 1rem; margin: 0 0 8px; }
-
-    .row {
-      width: 100%;
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      justify-content: flex-start;
-      flex-wrap: wrap;
+    .chip.selected{border-color:var(--accent); background:var(--accent); color:#fff}
+    .hint{font-size:.8rem; color:var(--muted); line-height:1.4}
+    .primary{
+      border:none; border-radius:999px;
+      padding:10px 16px;
+      background:var(--accent); color:#fff;
+      cursor:pointer;
+      box-shadow:0 4px 10px rgba(0,119,182,.25);
+      font-size:.92rem;
     }
-
-    .body-region-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 6px;
-      width: 100%;
-    }
-
-    .region-btn {
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      padding: 4px 10px;
-      font-size: 0.8rem;
-      background: #fafafa;
-      cursor: pointer;
-      color: var(--text-secondary);
-      transition: all 0.15s ease;
-      user-select: none;
-    }
-
-    .region-btn.active {
-      border-color: var(--accent);
-      background: var(--accent-soft);
-      color: var(--accent);
-      font-weight: 600;
-    }
-
-    .symptom-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 6px;
-    }
-
-    .symptom-tag {
-      font-size: 0.82rem;
-      padding: 4px 10px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: var(--tag-bg);
-      color: var(--text-secondary);
-      cursor: pointer;
-      user-select: none;
-      transition: all 0.12s ease;
-      white-space: nowrap;
-    }
-
-    .symptom-tag.selected {
-      border-color: var(--accent);
-      background: var(--tag-selected-bg);
-      color: var(--tag-selected-text);
-      font-weight: 500;
-    }
-
-    .summary-box {
-      font-size: 0.86rem;
-      color: var(--text-secondary);
-      line-height: 1.5;
-    }
-
-    .summary-title { font-weight: 600; margin-bottom: 4px; }
-    .summary-item { margin-bottom: 2px; }
-
-    .btn-primary {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 8px 16px;
-      border-radius: 999px;
-      border: none;
-      background: var(--accent);
-      color: #ffffff;
-      font-size: 0.9rem;
-      cursor: pointer;
-      margin-top: 6px;
-      transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.06s ease;
-      box-shadow: 0 4px 10px rgba(0, 119, 182, 0.25);
-    }
-
-    .btn-primary:active { transform: translateY(1px); box-shadow: 0 2px 6px rgba(0,119,182,0.25); }
-    .btn-primary:disabled { opacity: 0.6; cursor: wait; box-shadow: none; }
-
-    .hint {
-      font-size: 0.78rem;
-      color: var(--text-secondary);
-      margin-top: 4px;
-    }
-
-    .result-box {
-      font-size: 0.9rem;
-      line-height: 1.6;
-      color: var(--text-main);
-    }
-
-    .result-title { font-weight: 600; margin-bottom: 4px; }
-    .result-section { margin-top: 6px; }
-    .result-label { font-weight: 600; }
-    .result-warning { margin-top: 8px; color: var(--danger); }
-
-    .ai-note {
-      margin-top: 10px;
-      padding-top: 8px;
-      border-top: 1px dashed #ddd;
-      font-size: 0.88rem;
-      color: #333333;
-    }
-    .ai-error { margin-top: 6px; color: var(--danger); font-size: 0.85rem; }
-
-    .small {
-      font-size: 0.78rem;
-      color: var(--text-secondary);
-    }
-
-    .pill {
-      padding: 2px 8px;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      background: #fafafa;
-    }
-
-    @media (max-width: 900px) {
-      body { flex-direction: column; }
-      .body-wrapper { width: 100%; }
+    .primary:disabled{opacity:.6; cursor:wait; box-shadow:none}
+    .small{font-size:.78rem; color:var(--muted)}
+    .danger{color:var(--danger)}
+    pre{white-space:pre-wrap; margin:0; font-size:12px; color:#333}
+    .section{margin-top:8px}
+    .label{font-weight:600}
+    .divider{border-top:1px dashed #ddd; margin-top:10px; padding-top:10px}
+    @media(max-width:900px){
+      body{flex-direction:column}
+      .left{flex:unset}
     }
   </style>
 </head>
-
 <body>
-  <div class="body-wrapper card">
-    <h1 id="titleRegion">部位选择</h1>
+  <div class="left">
+    <div class="card">
+      <h1 id="uiTitleLeft">部位选择</h1>
+      <div class="row" style="justify-content:flex-start">
+        <button class="btn active" id="btnZh" type="button">中文</button>
+        <button class="btn" id="btnEn" type="button">English</button>
+      </div>
 
-    <div class="row" style="justify-content:center; margin-bottom:4px;">
-      <button id="btnZh" class="region-btn active" type="button">中文</button>
-      <button id="btnEn" class="region-btn" type="button">English</button>
+      <div class="section">
+        <div class="row" id="regionButtons"></div>
+      </div>
+
+      <div class="hint section" id="uiHintLeft">
+        提示：先选部位，再多选症状（所有症状来自后端 /api/symptoms）。
+      </div>
+
+      <div class="section small">
+        API：<span id="apiText"></span>
+      </div>
+      <div class="section small danger" id="loadError" style="display:none;"></div>
     </div>
 
-    <div class="body-region-buttons" id="regionButtons"></div>
-
-    <div class="hint" id="hintLeft">
-      提示：点击部位按钮切换部位，再多选症状。a
+    <div class="card">
+      <h1 id="uiTitleSelected">已选症状</h1>
+      <div class="small" id="selectedCount">已选：0</div>
+      <div class="section" id="selectedSummary" class="small">暂未选择任何症状。</div>
+      <div class="section">
+        <button class="btn" id="btnClear" type="button">清空</button>
+      </div>
     </div>
   </div>
 
-  <div class="right-wrapper">
+  <div class="right">
     <div class="card">
-      <h1 id="titleSymptoms">症状多选（按部位）</h1>
+      <h1 id="uiTitleSymptoms">症状多选（按部位）</h1>
+      <div class="small" id="currentRegionTitle">当前部位：</div>
+      <div class="section" id="symptomList"></div>
 
-      <div id="currentRegionTitle" style="font-size:0.92rem;margin-bottom:4px;">
-        当前部位：
+      <div class="section">
+        <button class="primary" id="analyzeBtn" type="button">生成辨证建议（从后端）</button>
       </div>
 
-      <div id="symptomList"></div>
-
-      <div class="summary-box" style="margin-top:10px;">
-        <div class="summary-title" id="titleSelected">当前已选择症状：</div>
-        <div id="selectedSummary">暂未选择任何症状。</div>
-        <div class="small" style="margin-top:6px;">
-          <span class="pill" id="selectedCount">已选：0</span>
-          <span class="pill" id="apiInfo">API: -</span>
-        </div>
+      <div class="hint section" id="uiHintRight">
+        温馨提示：仅用于学习与自我复核，不作诊断处方。
       </div>
 
-      <button id="analyzeBtn" class="btn-primary">生成辨证建议（从后端）</button>
-
-      <div class="hint" id="tipRight">
-        温馨提示：此工具仅用于中医理论学习和示意，不用于真实诊断或处方。
-      </div>
-
-      <details style="margin-top:10px;">
-        <summary class="small" id="debugTitle">调试：查看发送给后端的 payload</summary>
-        <pre id="debugPayload" style="white-space:pre-wrap; font-size:12px; color:#333;"></pre>
+      <details class="section">
+        <summary class="small">调试：payload（发给后端）</summary>
+        <pre id="debugPayload"></pre>
       </details>
     </div>
 
     <div class="card">
-      <h2 id="titleResult">辨证结果示意</h2>
-      <div id="analysisResult" class="result-box">
-        请选择多个症状后，点击“生成辨证建议”查看示意性分析。
+      <h2 id="uiTitleResult">辨证结果</h2>
+      <div id="analysisResult" class="small">
+        请选择多个症状后点击“生成辨证建议”。
       </div>
     </div>
 
     <div class="card" id="eightCard" style="display:none;">
-      <h2 id="titleEight">八纲/八证（前端粗判）</h2>
-      <div class="result-box" id="eightBox"></div>
+      <h2 id="uiTitleEight">八纲/八证</h2>
+      <div id="eightBox" class="small"></div>
     </div>
   </div>
 
- <script>
-  // ===== 0) API 配置 =====
+<script>
+(() => {
   const ANALYZE_URL = "https://tcmai-api.vercel.app/api/analyze";
   const SYMPTOMS_URL = "https://tcmai-api.vercel.app/api/symptoms";
 
-  // ===== 1) Region 定义（按钮永远靠这个显示）=====
+  // Region 顺序和 key（必须与你后端 SYMPTOMS[].regions 一致）
   const REGION_META = [
-    { key: "head", zh: "头部", en: "Head" },
-    { key: "eye", zh: "眼", en: "Eyes" },
-    { key: "ear", zh: "耳", en: "Ears" },
-    { key: "nose", zh: "鼻", en: "Nose" },
-    { key: "throat", zh: "咽喉", en: "Throat" },
-    { key: "mouth", zh: "口腔/口渴", en: "Mouth/Thirst" },
-    { key: "chest", zh: "胸部 / 心肺", en: "Chest" },
-    { key: "upperAbd", zh: "上腹 / 胃脘", en: "Upper abdomen" },
-    { key: "midAbd", zh: "中腹", en: "Mid abdomen" },
-    { key: "lowerAbd", zh: "下腹 / 月经", en: "Lower abdomen / Menses" },
-    { key: "stool", zh: "大便", en: "Stool" },
-    { key: "urine", zh: "小便", en: "Urine" },
-    { key: "whole", zh: "全身 / 体质", en: "Whole body" }
+    { key:"head", zh:"头部", en:"Head" },
+    { key:"eye", zh:"眼", en:"Eyes" },
+    { key:"ear", zh:"耳", en:"Ears" },
+    { key:"nose", zh:"鼻", en:"Nose" },
+    { key:"throat", zh:"咽喉", en:"Throat" },
+    { key:"mouth", zh:"口腔/口渴", en:"Mouth/Thirst" },
+    { key:"chest", zh:"胸部 / 心肺", en:"Chest" },
+    { key:"upperAbd", zh:"上腹 / 胃脘", en:"Upper Abdomen" },
+    { key:"midAbd", zh:"中腹", en:"Mid Abdomen" },
+    { key:"lowerAbd", zh:"下腹 / 月经", en:"Lower Abdomen / Menses" },
+    { key:"stool", zh:"大便", en:"Stool" },
+    { key:"urine", zh:"小便", en:"Urine" },
+    { key:"whole", zh:"全身 / 体质", en:"Whole Body" }
   ];
 
-  // ===== 2) 状态 =====
+  const UI = {
+    zh:{
+      left:"部位选择", selected:"已选症状", symptoms:"症状多选（按部位）",
+      hintL:"提示：先选部位，再多选症状（所有症状来自后端 /api/symptoms）。",
+      hintR:"温馨提示：仅用于学习与自我复核，不作诊断处方。",
+      region:"当前部位：", none:"暂未选择任何症状。",
+      analyze:"生成辨证建议（从后端）", analyzing:"正在请求…",
+      need2:"请至少选择 2 条症状。", clear:"清空",
+      result:"辨证结果", eight:"八纲/八证"
+    },
+    en:{
+      left:"Region", selected:"Selected", symptoms:"Symptoms (by region)",
+      hintL:"Tip: select a region, then multi-select symptoms (loaded from backend /api/symptoms).",
+      hintR:"Note: educational self-check only; not diagnosis or medical advice.",
+      region:"Current region: ", none:"None selected.",
+      analyze:"Analyze (backend)", analyzing:"Requesting…",
+      need2:"Please select at least 2 symptoms.", clear:"Clear",
+      result:"Result", eight:"Eight Principles"
+    }
+  };
+
+  // DOM
+  const $ = (id)=>document.getElementById(id);
+  const regionButtonsEl = $("regionButtons");
+  const symptomListEl = $("symptomList");
+  const selectedSummaryEl = $("selectedSummary");
+  const selectedCountEl = $("selectedCount");
+  const currentRegionTitleEl = $("currentRegionTitle");
+  const analyzeBtn = $("analyzeBtn");
+  const analysisResultEl = $("analysisResult");
+  const debugPayloadEl = $("debugPayload");
+  const eightCardEl = $("eightCard");
+  const eightBoxEl = $("eightBox");
+  const loadErrorEl = $("loadError");
+
+  $("apiText").textContent = new URL(ANALYZE_URL).host;
+
+  // State
   let lang = "zh";
   let currentRegionKey = "head";
-  let regionsData = {}; // 后端返回：{ [regionKey]: [{id,zh,en}] }
-  let selected = [];    // [{ regionKey, id }]
+  let regionsData = {}; // { regionKey: [{id,zh,en}] }
+  let selected = []; // [{regionKey,id}]
+  let symptomById = new Map(); // id -> {id,zh,en}
 
-  // ===== 3) DOM（必须都存在，否则直接 return）=====
-  const regionButtonsEl = document.getElementById("regionButtons");
-  const symptomListEl = document.getElementById("symptomList");
-  const selectedSummaryEl = document.getElementById("selectedSummary");
-  const currentRegionTitleEl = document.getElementById("currentRegionTitle");
-  const analyzeBtn = document.getElementById("analyzeBtn");
-  const analysisResultEl = document.getElementById("analysisResult");
-
-  if (!regionButtonsEl || !symptomListEl || !selectedSummaryEl || !currentRegionTitleEl || !analyzeBtn || !analysisResultEl) {
-    console.error("Missing required DOM nodes. Check ids: regionButtons, symptomList, selectedSummary, currentRegionTitle, analyzeBtn, analysisResult");
+  function t(k){ return UI[lang][k]; }
+  function regionLabel(key){
+    const r = REGION_META.find(x=>x.key===key);
+    return r ? (lang==="zh"?r.zh:r.en) : key;
   }
 
-  // 给 SVG onclick 用（你 SVG 里有 onclick="selectRegion('head')" 的话必须暴露）
-  window.selectRegion = selectRegion;
-
-  function regionLabel(key) {
-    const r = REGION_META.find(x => x.key === key);
-    return r ? (lang === "zh" ? r.zh : r.en) : key;
+  function setUIText(){
+    $("uiTitleLeft").textContent = t("left");
+    $("uiTitleSelected").textContent = t("selected");
+    $("uiTitleSymptoms").textContent = t("symptoms");
+    $("uiHintLeft").textContent = t("hintL");
+    $("uiHintRight").textContent = t("hintR");
+    $("uiTitleResult").textContent = t("result");
+    $("uiTitleEight").textContent = t("eight");
+    analyzeBtn.textContent = t("analyze");
+    $("btnClear").textContent = t("clear");
+    $("btnZh").classList.toggle("active", lang==="zh");
+    $("btnEn").classList.toggle("active", lang==="en");
   }
 
-  function renderRegionButtons() {
+  function renderRegionButtons(){
     regionButtonsEl.innerHTML = "";
-    for (const r of REGION_META) {
+    for(const r of REGION_META){
       const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "region-btn" + (r.key === currentRegionKey ? " active" : "");
-      btn.textContent = lang === "zh" ? r.zh : r.en;
-      btn.onclick = () => selectRegion(r.key);
+      btn.type="button";
+      btn.className = "btn"+(r.key===currentRegionKey?" active":"");
+      btn.textContent = lang==="zh"?r.zh:r.en;
+      btn.onclick = ()=>{ currentRegionKey=r.key; rerenderRegion(); };
       regionButtonsEl.appendChild(btn);
     }
   }
 
-  function updateCurrentRegionTitle() {
-    currentRegionTitleEl.textContent = `当前部位：${regionLabel(currentRegionKey)}（可多选）`;
-    if (lang === "en") {
-      currentRegionTitleEl.textContent = `Current region: ${regionLabel(currentRegionKey)} (multi-select)`;
-    }
-  }
-
-  function getSymptomsForRegion(key) {
-    const list = regionsData[key] || [];
-    // 去重按 id
-    const seen = new Set();
-    const out = [];
-    for (const s of list) {
-      if (!s || !s.id) continue;
-      if (seen.has(s.id)) continue;
-      seen.add(s.id);
-      out.push(s);
-    }
-    return out;
-  }
-
-  function isSelected(regionKey, id) {
-    return selected.some(x => x.regionKey === regionKey && x.id === id);
-  }
-
-  function toggleSymptom(regionKey, s) {
-    const id = s.id;
-    const idx = selected.findIndex(x => x.regionKey === regionKey && x.id === id);
-    if (idx >= 0) selected.splice(idx, 1);
-    else selected.push({ regionKey, id });
+  function rerenderRegion(){
+    renderRegionButtons();
+    currentRegionTitleEl.textContent = `${t("region")}${regionLabel(currentRegionKey)}`;
     renderSymptomList();
-    renderSelectedSummary();
   }
 
-  function renderSymptomList() {
+  function renderSymptomList(){
     symptomListEl.innerHTML = "";
-    const list = getSymptomsForRegion(currentRegionKey);
+    const list = (regionsData[currentRegionKey] || []).filter(s=>s && s.id);
 
-    if (!list.length) {
+    if(!list.length){
       const div = document.createElement("div");
-      div.className = "hint";
-      div.textContent = lang === "zh"
-        ? "这个部位暂时没有症状（可能是后端 /api/symptoms 未加载成功，或后端 SYMPTOMS 没给这个 region 配置）。"
-        : "No symptoms for this region (backend /api/symptoms may have failed, or SYMPTOMS has no items for this region).";
+      div.className="small";
+      div.innerHTML = `<span class="danger">${lang==="zh"?"该部位暂无症状":"No symptoms for this region"}</span><br/>
+      <span class="small">${lang==="zh"?"（要么后端没给这个 region 配 SYMPTOMS，要么 /api/symptoms 加载失败）":"(Either backend SYMPTOMS has none for this region, or /api/symptoms failed.)"}</span>`;
       symptomListEl.appendChild(div);
       return;
     }
 
-    const container = document.createElement("div");
-    container.className = "symptom-tags";
+    const chips = document.createElement("div");
+    chips.className="chips";
 
-    for (const s of list) {
-      const tag = document.createElement("button");
-      tag.type = "button";
-      tag.className = "symptom-tag" + (isSelected(currentRegionKey, s.id) ? " selected" : "");
-      tag.textContent = (lang === "zh" ? (s.zh || s.id) : (s.en || s.zh || s.id));
-      tag.onclick = () => toggleSymptom(currentRegionKey, s);
-      container.appendChild(tag);
+    for(const s of list){
+      const chip = document.createElement("button");
+      chip.type="button";
+      chip.className = "chip"+(isSelected(currentRegionKey,s.id)?" selected":"");
+      chip.textContent = lang==="zh" ? (s.zh||s.id) : (s.en||s.zh||s.id);
+      chip.onclick = ()=>toggleSelect(currentRegionKey,s.id);
+      chips.appendChild(chip);
     }
-    symptomListEl.appendChild(container);
+    symptomListEl.appendChild(chips);
   }
 
-  function renderSelectedSummary() {
-    if (!selected.length) {
-      selectedSummaryEl.textContent = lang === "zh" ? "暂未选择任何症状。" : "None selected.";
+  function isSelected(regionKey,id){
+    return selected.some(x=>x.regionKey===regionKey && x.id===id);
+  }
+  function toggleSelect(regionKey,id){
+    const i = selected.findIndex(x=>x.regionKey===regionKey && x.id===id);
+    if(i>=0) selected.splice(i,1);
+    else selected.push({regionKey,id});
+    renderSymptomList();
+    renderSelected();
+  }
+
+  function renderSelected(){
+    selectedCountEl.textContent = (lang==="zh"?"已选：":"Selected: ")+selected.length;
+    if(!selected.length){
+      selectedSummaryEl.textContent = t("none");
       return;
     }
-
-    // 建一个 id->name 的索引（从 regionsData 扫出来）
-    const byId = new Map();
-    for (const rk of Object.keys(regionsData)) {
-      for (const s of (regionsData[rk] || [])) if (s?.id) byId.set(s.id, s);
-    }
-
     const byRegion = {};
-    for (const item of selected) {
-      const label = regionLabel(item.regionKey);
-      if (!byRegion[label]) byRegion[label] = [];
-      const s = byId.get(item.id);
-      const name = lang === "zh" ? (s?.zh || item.id) : (s?.en || s?.zh || item.id);
+    for(const x of selected){
+      const label = regionLabel(x.regionKey);
+      if(!byRegion[label]) byRegion[label]=[];
+      const s = symptomById.get(x.id);
+      const name = lang==="zh" ? (s?.zh||x.id) : (s?.en||s?.zh||x.id);
       byRegion[label].push(name);
     }
-
-    const lines = Object.keys(byRegion).map(label => {
+    const lines = Object.keys(byRegion).map(label=>{
       const uniq = Array.from(new Set(byRegion[label]));
-      return `${label}: ${uniq.join(lang === "zh" ? "、" : ", ")}`;
+      return `<div class="small"><b>${label}</b>: ${uniq.join(lang==="zh"?"、":", ")}</div>`;
     });
-
-    selectedSummaryEl.innerHTML = lines.map(x => `<div class="summary-item">${x}</div>`).join("");
+    selectedSummaryEl.innerHTML = lines.join("");
   }
 
-  function renderAnalysisResult(r) {
-    if (!r) {
-      analysisResultEl.textContent = lang === "zh"
-        ? "请选择多个症状后，点击“生成辨证建议”查看示意性分析。"
-        : "Select multiple symptoms, then click Analyze to see an educational summary.";
+  function renderResult(r){
+    if(!r){
+      analysisResultEl.textContent = lang==="zh"
+        ? "请选择多个症状后点击“生成辨证建议”。"
+        : "Select multiple symptoms and click Analyze.";
+      eightCardEl.style.display="none";
       return;
     }
+
     let html = "";
-    if (r.title) html += `<div class="result-title">${r.title}</div>`;
-    if (r.pattern) html += `<div class="result-section"><span class="result-label">Pattern:</span> ${r.pattern}</div>`;
-    if (r.explanation) html += `<div class="result-section"><span class="result-label">Explanation:</span> ${r.explanation}</div>`;
-    if (r.principle) html += `<div class="result-section"><span class="result-label">Principle:</span> ${r.principle}</div>`;
-    if (r.acupuncture) html += `<div class="result-section"><span class="result-label">Acupuncture:</span> ${r.acupuncture}</div>`;
-    if (r.herbal) html += `<div class="result-section"><span class="result-label">Herbal:</span> ${r.herbal}</div>`;
-    if (r.aiNotes) html += `<div class="ai-note"><span class="result-label">AI:</span> ${r.aiNotes}</div>`;
-    if (r.aiError) html += `<div class="ai-error"><span class="result-label">AI:</span> ${r.aiError}</div>`;
-    if (r.warning) html += `<div class="result-warning">${r.warning}</div>`;
+    if(r.title) html += `<div class="section"><span class="label">${r.title}</span></div>`;
+    if(r.pattern) html += `<div class="section"><span class="label">Pattern:</span> ${r.pattern}</div>`;
+    if(r.explanation) html += `<div class="section"><span class="label">Explanation:</span> ${r.explanation}</div>`;
+    if(r.principle) html += `<div class="section"><span class="label">Principle:</span> ${r.principle}</div>`;
+    if(r.acupuncture) html += `<div class="section"><span class="label">Acupuncture:</span> ${r.acupuncture}</div>`;
+    if(r.herbal) html += `<div class="section"><span class="label">Herbal:</span> ${r.herbal}</div>`;
+    if(r.aiNotes) html += `<div class="divider"><span class="label">AI:</span> ${r.aiNotes}</div>`;
+    if(r.aiError) html += `<div class="divider danger"><span class="label">AI:</span> ${r.aiError}</div>`;
+    if(r.warning) html += `<div class="section danger">${r.warning}</div>`;
     analysisResultEl.innerHTML = html;
-  }
 
-  function selectRegion(key) {
-    currentRegionKey = key;
-    renderRegionButtons();
-    updateCurrentRegionTitle();
-    renderSymptomList();
-  }
-
-  async function loadSymptomsSafe() {
-    try {
-      const resp = await fetch(`${SYMPTOMS_URL}?lang=${encodeURIComponent(lang)}`, { cache: "no-store" });
-      // ★关键：就算不是 200，也不要让页面死
-      if (!resp.ok) throw new Error(`symptoms api HTTP ${resp.status}`);
-      const data = await resp.json();
-      regionsData = data?.regions || {};
-    } catch (e) {
-      console.error("loadSymptoms failed:", e);
-      regionsData = {}; // 保底为空，但页面继续可用
+    if(r.eightPrinciples){
+      const ep = r.eightPrinciples;
+      const ev = Array.isArray(r.eightEvidence)?r.eightEvidence:[];
+      let ehtml = "";
+      ehtml += `<div class="section"><span class="label">${lang==="zh"?"表/里":"Exterior/Interior"}:</span> ${ep.interiorExterior}</div>`;
+      ehtml += `<div class="section"><span class="label">${lang==="zh"?"寒/热":"Cold/Heat"}:</span> ${ep.coldHeat}</div>`;
+      ehtml += `<div class="section"><span class="label">${lang==="zh"?"虚/实":"Def/Excess"}:</span> ${ep.defExcess}</div>`;
+      ehtml += `<div class="section"><span class="label">${lang==="zh"?"阴/阳":"Yin/Yang"}:</span> ${ep.yinYang}</div>`;
+      if(ev.length){
+        ehtml += `<div class="section"><span class="label">${lang==="zh"?"依据":"Evidence"}:</span><br/>${ev.slice(0,16).map(x=>"• "+x).join("<br/>")}</div>`;
+      }
+      eightBoxEl.innerHTML = ehtml;
+      eightCardEl.style.display="block";
+    }else{
+      eightCardEl.style.display="none";
     }
   }
 
-  async function handleAnalyze() {
-    if (selected.length < 2) {
-      alert(lang === "zh" ? "请至少选择 2 条症状再生成辨证建议。" : "Please select at least 2 symptoms.");
+  async function loadSymptoms(){
+    loadErrorEl.style.display="none";
+    const url = `${SYMPTOMS_URL}?lang=${encodeURIComponent(lang)}`;
+    const resp = await fetch(url, { cache:"no-store" });
+    if(!resp.ok){
+      throw new Error(`GET /api/symptoms failed: HTTP ${resp.status}`);
+    }
+    const data = await resp.json();
+    regionsData = data?.regions || {};
+    // build id map
+    symptomById = new Map();
+    for(const rk of Object.keys(regionsData)){
+      for(const s of (regionsData[rk]||[])){
+        if(s?.id) symptomById.set(s.id, s);
+      }
+    }
+  }
+
+  async function analyze(){
+    if(selected.length < 2){
+      alert(t("need2"));
       return;
     }
-
     analyzeBtn.disabled = true;
-    analyzeBtn.textContent = lang === "zh" ? "正在向后端请求…" : "Requesting backend…";
-
-    try {
+    analyzeBtn.textContent = t("analyzing");
+    try{
       const payload = {
         lang,
-        symptoms: selected.map(x => ({ id: x.id })),
-        context: {},
-        tongue: {},
-        pulse: {}
+        symptoms: selected.map(x=>({ id:x.id })),
+        context:{}, tongue:{}, pulse:{}
       };
+      debugPayloadEl.textContent = JSON.stringify(payload, null, 2);
 
       const resp = await fetch(ANALYZE_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
         body: JSON.stringify(payload)
       });
-
-      if (!resp.ok) {
-        const text = await resp.text();
-        renderAnalysisResult({ title: "Request failed", explanation: `HTTP ${resp.status}`, warning: text });
-      } else {
+      if(!resp.ok){
+        const txt = await resp.text();
+        renderResult({ title:"Request failed", explanation:`HTTP ${resp.status}`, warning:txt });
+      }else{
         const data = await resp.json();
-        renderAnalysisResult(data);
+        renderResult(data);
       }
-    } catch (e) {
-      renderAnalysisResult({ title: "Request failed", explanation: e?.message || String(e) });
-    } finally {
+    }catch(e){
+      renderResult({ title:"Request failed", explanation: e?.message || String(e) });
+    }finally{
       analyzeBtn.disabled = false;
-      analyzeBtn.textContent = lang === "zh" ? "生成辨证建议（从后端）" : "Analyze (from backend)";
+      analyzeBtn.textContent = t("analyze");
     }
   }
 
-  analyzeBtn.addEventListener("click", handleAnalyze);
+  // Events
+  $("btnZh").onclick = async()=>{ lang="zh"; setUIText(); await safeReload(); };
+  $("btnEn").onclick = async()=>{ lang="en"; setUIText(); await safeReload(); };
+  $("btnClear").onclick = ()=>{ selected=[]; renderSelected(); renderSymptomList(); renderResult(null); };
+  analyzeBtn.onclick = analyze;
 
-  // ===== init：先渲染“部位”，再去拉症状（拉失败也不影响部位显示）=====
-  (async function init() {
-    renderRegionButtons();
-    updateCurrentRegionTitle();
-    renderAnalysisResult(null);
-    renderSelectedSummary();
-    // 再加载症状
-    await loadSymptomsSafe();
-    renderSymptomList();
-  })();
+  async function safeReload(){
+    try{
+      await loadSymptoms();
+    }catch(e){
+      regionsData = {};
+      symptomById = new Map();
+      loadErrorEl.style.display="block";
+      loadErrorEl.textContent = (lang==="zh"
+        ? `症状加载失败：${e.message}（检查 tcmai-api 是否部署成功、/api/symptoms 是否能打开）`
+        : `Failed to load symptoms: ${e.message} (check tcmai-api deployment and /api/symptoms).`
+      );
+    }
+    rerenderRegion();
+    renderSelected();
+    renderResult(null);
+  }
+
+  // init：先把“部位按钮”画出来，避免任何加载失败导致空白
+  setUIText();
+  renderRegionButtons();
+  rerenderRegion();
+  renderSelected();
+  renderResult(null);
+  safeReload();
+})();
 </script>
-
 </body>
 </html>
 
