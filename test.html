@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>中医人体点选预览</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+        "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: #f3f4f6;
+    }
+
+    .app {
+      max-width: 900px;
+      margin: 24px auto;
+      padding: 16px;
+      display: grid;
+      grid-template-columns: 1fr 260px;
+      gap: 16px;
+    }
+
+    .card {
+      background: #fafafa;
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      padding: 12px;
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .btn {
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid #e5e7eb;
+      background: white;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .btn.active {
+      background: rgba(37,99,235,0.12);
+      color: #1e40af;
+    }
+
+    svg path.region {
+      fill: #e5e7eb;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    svg path.region:hover {
+      fill: #93c5fd;
+    }
+
+    svg path.region.active {
+      fill: #2563eb;
+    }
+
+    .list {
+      display: grid;
+      gap: 6px;
+      max-height: 520px;
+      overflow: auto;
+    }
+
+    .list button {
+      text-align: left;
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      background: white;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .list button.active {
+      background: rgba(37,99,235,0.12);
+      border-color: #93c5fd;
+      color: #1e40af;
+      font-weight: 600;
+    }
+
+    .hint {
+      font-size: 13px;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app">
+  <!-- 左：人体 -->
+  <div class="card">
+    <div class="toolbar">
+      <div>
+        <button class="btn active" onclick="switchSide('front')" id="btn-front">正面</button>
+        <button class="btn" onclick="switchSide('back')" id="btn-back">背面</button>
+      </div>
+      <div class="hint" id="status">点选人体部位</div>
+    </div>
+
+    <!-- SVG 容器 -->
+    <div id="svg-container"></div>
+  </div>
+
+  <!-- 右：列表 -->
+  <div class="card">
+    <div style="font-weight:700;margin-bottom:8px;">部位列表</div>
+    <div class="list" id="region-list"></div>
+  </div>
+</div>
+
+<script>
+  const regions = {
+    front: [
+      ["head","头面"],
+      ["neck","颈项"],
+      ["chest","胸"],
+      ["epigastrium","胃脘"],
+      ["abdomen","腹"],
+      ["pelvis","小腹"],
+      ["l_thigh","左大腿"],
+      ["r_thigh","右大腿"],
+      ["l_knee","左膝"],
+      ["r_knee","右膝"],
+      ["l_foot","左足"],
+      ["r_foot","右足"]
+    ],
+    back: [
+      ["head","后头"],
+      ["neck","后颈"],
+      ["upper_back","上背"],
+      ["mid_back","中背"],
+      ["low_back","腰"],
+      ["hip","骶/臀"],
+      ["l_thigh","左大腿后"],
+      ["r_thigh","右大腿后"],
+      ["l_knee","左膝后"],
+      ["r_knee","右膝后"],
+      ["l_foot","左足后"],
+      ["r_foot","右足后"]
+    ]
+  };
+
+  let side = "front";
+  let active = null;
+
+  function switchSide(s) {
+    side = s;
+    active = null;
+    document.getElementById("btn-front").classList.toggle("active", s==="front");
+    document.getElementById("btn-back").classList.toggle("active", s==="back");
+    render();
+  }
+
+  function selectRegion(id, label) {
+    active = id;
+    document.getElementById("status").innerText =
+      (side === "front" ? "正面" : "背面") + " · " + label;
+    render();
+  }
+
+  function render() {
+    // SVG（极简示意，商业轮廓感）
+    const svg = `
+    <svg viewBox="0 0 200 520" width="100%">
+      <path d="M100 20 C75 20 65 40 65 60 C65 85 85 100 100 100 C115 100 135 85 135 60 C135 40 125 20 100 20 Z"
+        class="region ${active==='head'?'active':''}"
+        onclick="selectRegion('head','头')" />
+
+      <rect x="85" y="100" width="30" height="25"
+        class="region ${active==='neck'?'active':''}"
+        onclick="selectRegion('neck','颈')" />
+
+      <rect x="70" y="125" width="60" height="60"
+        class="region ${active==='chest'?'active':''}"
+        onclick="selectRegion('chest','胸')" />
+
+      <rect x="75" y="185" width="50" height="55"
+        class="region ${active==='epigastrium'?'active':''}"
+        onclick="selectRegion('epigastrium','胃脘')" />
+
+      <rect x="75" y="240" width="50" height="70"
+        class="region ${active==='abdomen'?'active':''}"
+        onclick="selectRegion('abdomen','腹')" />
+
+      <rect x="75" y="310" width="50" height="60"
+        class="region ${active==='pelvis'?'active':''}"
+        onclick="selectRegion('pelvis','小腹')" />
+
+      <rect x="65" y="370" width="30" height="90"
+        class="region ${active==='l_thigh'?'active':''}"
+        onclick="selectRegion('l_thigh','左腿')" />
+
+      <rect x="105" y="370" width="30" height="90"
+        class="region ${active==='r_thigh'?'active':''}"
+        onclick="selectRegion('r_thigh','右腿')" />
+    </svg>`;
+    document.getElementById("svg-container").innerHTML = svg;
+
+    // 列表
+    const list = regions[side].map(([id,label]) => `
+      <button class="${active===id?'active':''}"
+        onclick="selectRegion('${id}','${label}')">
+        ${label}
+      </button>
+    `).join("");
+    document.getElementById("region-list").innerHTML = list;
+  }
+
+  render();
+</script>
+
+</body>
+</html>
