@@ -68,6 +68,29 @@
     details summary{cursor:pointer; color:var(--muted); font-size:.84rem}
     pre{background:#0b1020; color:#e5e7eb; padding:10px; border-radius:12px; overflow:auto; font-size:.78rem; line-height:1.45}
 
+    /* Four exams form */
+    .grid{
+      display:grid; gap:10px;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+    }
+    .field{
+      display:flex; flex-direction:column; gap:4px;
+    }
+    .field label{
+      font-size:.82rem; color:var(--muted);
+    }
+    select{
+      width:100%;
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:8px 10px;
+      background:#fff;
+      color:var(--text);
+      font-size:.9rem;
+      outline:none;
+    }
+    .span2{grid-column:1 / -1}
+
     /* SVG styles */
     .svgbox{border:1px solid #eee; border-radius:12px; padding:10px; background: radial-gradient(circle at 50% 0%, #fdfdfd, #f3f4f6)}
     svg{width:100%; height:auto}
@@ -106,7 +129,6 @@
       <!-- Human body big diagram -->
       <div class="svgbox">
         <svg viewBox="0 0 260 430" aria-label="body-map">
-          <!-- Body silhouette -->
           <g>
             <circle cx="130" cy="55" r="30" fill="#fff" stroke="#cbd5e1"></circle>
             <rect x="95" y="90" width="70" height="140" rx="26" fill="#fff" stroke="#cbd5e1"></rect>
@@ -116,7 +138,6 @@
             <rect x="130" y="230" width="18" height="120" rx="10" fill="#fff" stroke="#cbd5e1"></rect>
           </g>
 
-          <!-- Click regions overlay -->
           <g class="hot" onclick="selectRegion('head')">
             <circle cx="130" cy="55" r="30" fill="transparent" stroke="transparent"></circle>
             <text x="130" y="58" text-anchor="middle" class="svglab" id="labHead">Head</text>
@@ -147,7 +168,6 @@
             <text x="130" y="330" text-anchor="middle" class="svglab" id="labWhole">Whole</text>
           </g>
 
-          <!-- Stool / Urine buttons -->
           <g class="hot" onclick="selectRegion('stool')">
             <rect x="50" y="372" width="70" height="28" rx="12" fill="#fff" stroke="#cbd5e1"></rect>
             <text x="85" y="390" text-anchor="middle" class="svglab" id="labStool">Stool</text>
@@ -193,7 +213,6 @@
       </div>
 
       <div class="divider"></div>
-
       <div class="row" id="regionButtons"></div>
     </div>
 
@@ -206,6 +225,114 @@
 
   <!-- RIGHT -->
   <div class="right">
+    <!-- Four exams -->
+    <div class="card">
+      <h2 id="fourTitle">Four Examinations</h2>
+      <div class="muted" id="fourHint" style="margin-bottom:10px;"></div>
+
+      <div class="grid">
+        <div class="field">
+          <label id="lblDuration"></label>
+          <select id="selDuration">
+            <option value=""></option>
+            <option value="acute">acute</option>
+            <option value="chronic">chronic</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label id="lblSweat"></label>
+          <select id="selSweat">
+            <option value=""></option>
+            <option value="spontaneous">spontaneous</option>
+            <option value="night">night</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label id="lblThirst"></label>
+          <select id="selThirst">
+            <option value=""></option>
+            <option value="warm">warm drinks</option>
+            <option value="cold">cold drinks</option>
+            <option value="none">no thirst</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label id="lblPain"></label>
+          <select id="selPain">
+            <option value=""></option>
+            <option value="dull">dull (better with pressure)</option>
+            <option value="distending">distending/migrating</option>
+            <option value="stabbing">stabbing/fixed</option>
+            <option value="refusePress">refuses pressure</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label id="lblTongueBody"></label>
+          <select id="selTongueBody">
+            <option value=""></option>
+            <option value="pale">pale</option>
+            <option value="red">red</option>
+            <option value="purple">purple/dusky</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label id="lblCoatColor"></label>
+          <select id="selCoatColor">
+            <option value=""></option>
+            <option value="white">white</option>
+            <option value="yellow">yellow</option>
+            <option value="none">scanty/peeled</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label id="lblCoatQuality"></label>
+          <select id="selCoatQuality">
+            <option value=""></option>
+            <option value="greasy">greasy</option>
+            <option value="thick">thick</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label id="lblPulseDepth"></label>
+          <select id="selPulseDepth">
+            <option value=""></option>
+            <option value="floating">floating</option>
+            <option value="deep">deep</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label id="lblPulseRate"></label>
+          <select id="selPulseRate">
+            <option value=""></option>
+            <option value="rapid">rapid</option>
+            <option value="slow">slow</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label id="lblPulseShape"></label>
+          <select id="selPulseShape">
+            <option value=""></option>
+            <option value="thin">thin</option>
+            <option value="slippery">slippery</option>
+          </select>
+        </div>
+
+        <div class="field span2">
+          <div class="muted small" id="fourNote"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Symptoms -->
     <div class="card">
       <h1 id="titleSymptoms">Symptoms (by region)</h1>
       <div class="muted" id="currentRegionTitle"></div>
@@ -222,6 +349,7 @@
       </div>
     </div>
 
+    <!-- Result -->
     <div class="card">
       <h2 id="resultTitle">Result</h2>
       <div id="analysisResult" class="result"></div>
@@ -230,7 +358,6 @@
 
 <script>
   // ========= CONFIG =========
-  // If you deploy frontend separately, point this to your api domain
   const API_BASE = "https://tcmai-api.vercel.app";
   const API_SYMPTOMS = `${API_BASE}/api/symptoms`;
   const API_ANALYZE = `${API_BASE}/api/analyze`;
@@ -254,13 +381,34 @@
       resultTitle: "辨证结果",
       resultHint: "请选择多个症状后点击“生成辨证建议”。",
       need2: "请至少选择 2 条症状。",
-      // region labels
+
+      fourTitle: "四诊信息（用于八纲粗判）",
+      fourHint: "可选填：用于提高“寒热/表里/虚实”判断稳定性（自用复核）。",
+      fourNote: "注意：这不是诊断问诊，仅为学习复核。你也可以先不填。",
+
+      labels: {
+        duration:"病程", sweat:"汗", thirst:"口渴/喜饮", pain:"疼痛特点",
+        tongueBody:"舌质", coatColor:"苔色", coatQuality:"苔质",
+        pulseDepth:"脉位", pulseRate:"脉数", pulseShape:"脉形"
+      },
+      opts: {
+        duration:{ acute:"急性", chronic:"慢性" },
+        sweat:{ spontaneous:"自汗", night:"盗汗" },
+        thirst:{ warm:"喜热饮", cold:"喜冷饮", none:"不渴/不欲饮" },
+        pain:{ dull:"隐痛喜按", distending:"胀痛/窜痛", stabbing:"刺痛固定", refusePress:"拒按" },
+        tongueBody:{ pale:"淡", red:"红", purple:"紫暗" },
+        coatColor:{ white:"白苔", yellow:"黄苔", none:"少苔/剥苔" },
+        coatQuality:{ greasy:"腻", thick:"厚" },
+        pulseDepth:{ floating:"浮", deep:"沉" },
+        pulseRate:{ rapid:"数", slow:"迟" },
+        pulseShape:{ thin:"细", slippery:"滑" }
+      },
+
       regions: {
         head:"头部", eye:"眼", ear:"耳", nose:"鼻", throat:"咽喉", mouth:"口腔/口渴",
         chest:"胸部 / 心肺", upperAbd:"上腹 / 胃脘", midAbd:"中腹", lowerAbd:"下腹 / 月经",
         stool:"大便", urine:"小便", whole:"全身 / 体质"
       },
-      // result field labels
       field: {
         pattern:"证素倾向",
         explanation:"辨证思路",
@@ -290,6 +438,29 @@
       resultTitle: "Result",
       resultHint: "Select multiple symptoms and click Analyze.",
       need2: "Please select at least 2 symptoms.",
+
+      fourTitle: "Four Examinations (for Eight Principles)",
+      fourHint: "Optional: improves stability of cold/heat, exterior/interior, deficiency/excess scoring.",
+      fourNote: "Self-check only (not a clinical intake). You can leave these empty.",
+
+      labels: {
+        duration:"Course", sweat:"Sweat", thirst:"Thirst", pain:"Pain quality",
+        tongueBody:"Tongue body", coatColor:"Coat color", coatQuality:"Coat quality",
+        pulseDepth:"Pulse depth", pulseRate:"Pulse rate", pulseShape:"Pulse shape"
+      },
+      opts: {
+        duration:{ acute:"Acute", chronic:"Chronic" },
+        sweat:{ spontaneous:"Spontaneous sweating", night:"Night sweating" },
+        thirst:{ warm:"Prefers warm drinks", cold:"Prefers cold drinks", none:"No thirst" },
+        pain:{ dull:"Dull (better with pressure)", distending:"Distending/migrating", stabbing:"Stabbing/fixed", refusePress:"Refuses pressure" },
+        tongueBody:{ pale:"Pale", red:"Red", purple:"Purple/dusky" },
+        coatColor:{ white:"White", yellow:"Yellow", none:"Scanty/peeled" },
+        coatQuality:{ greasy:"Greasy", thick:"Thick" },
+        pulseDepth:{ floating:"Floating", deep:"Deep" },
+        pulseRate:{ rapid:"Rapid", slow:"Slow" },
+        pulseShape:{ thin:"Thin", slippery:"Slippery" }
+      },
+
       regions: {
         head:"Head", eye:"Eyes", ear:"Ears", nose:"Nose", throat:"Throat", mouth:"Mouth/Thirst",
         chest:"Chest", upperAbd:"Upper abdomen", midAbd:"Mid abdomen", lowerAbd:"Lower abdomen / Menses",
@@ -312,9 +483,16 @@
   // ========= STATE =========
   let lang = "en";
   let currentRegion = "head";
-  let regionsData = {}; // { regionKey: [ {id, zh, en} ] }
-  let selected = []; // [{id, regionKey}]
+  let regionsData = {};
+  let selected = [];
   let lastPayload = null;
+
+  // four exams state
+  const four = {
+    context: { duration:"", sweat:"", thirst:"", painQuality:"" },
+    tongue: { body:"", coatColor:"", coatQuality:"" },
+    pulse: { depth:"", rate:"", shape:"" }
+  };
 
   // ========= DOM =========
   const el = (id)=>document.getElementById(id);
@@ -328,7 +506,6 @@
   const dbgTitleEl = el("dbgTitle");
   const dbgPreEl = el("dbgPre");
 
-  // labels inside SVG
   const svgLabelMap = {
     head:"labHead", chest:"labChest", upperAbd:"labUpper", midAbd:"labMid", lowerAbd:"labLower",
     whole:"labWhole", stool:"labStool", urine:"labUrine",
@@ -351,7 +528,26 @@
     dbgTitleEl.textContent = T("dbg");
     el("resultTitle").textContent = T("resultTitle");
 
-    // language buttons
+    // four exams texts
+    el("fourTitle").textContent = T("fourTitle");
+    el("fourHint").textContent = T("fourHint");
+    el("fourNote").textContent = T("fourNote");
+
+    const L = UI[lang].labels;
+    el("lblDuration").textContent = L.duration;
+    el("lblSweat").textContent = L.sweat;
+    el("lblThirst").textContent = L.thirst;
+    el("lblPain").textContent = L.pain;
+    el("lblTongueBody").textContent = L.tongueBody;
+    el("lblCoatColor").textContent = L.coatColor;
+    el("lblCoatQuality").textContent = L.coatQuality;
+    el("lblPulseDepth").textContent = L.pulseDepth;
+    el("lblPulseRate").textContent = L.pulseRate;
+    el("lblPulseShape").textContent = L.pulseShape;
+
+    // rewrite option labels based on lang (keep values)
+    rewriteSelectOptions();
+
     const zh = el("btnZh"), en = el("btnEn");
     zh.classList.toggle("active", lang==="zh");
     en.classList.toggle("active", lang==="en");
@@ -373,7 +569,6 @@
     el(svgLabelMap.throat).textContent = R("throat");
     el(svgLabelMap.mouth).textContent = lang==="zh" ? "口" : "Mouth";
 
-    // api host link
     const host = API_BASE.replace(/^https?:\/\//,"");
     const apiHost = el("apiHost");
     apiHost.textContent = host;
@@ -383,7 +578,29 @@
     renderRegionButtons();
     renderSymptoms();
     renderSelected();
-    renderResult(null); // reset hint
+    renderResult(null);
+  }
+
+  function rewriteSelectOptions(){
+    const O = UI[lang].opts;
+
+    setSelectText("selDuration", O.duration);
+    setSelectText("selSweat", O.sweat);
+    setSelectText("selThirst", O.thirst);
+    setSelectText("selPain", O.pain);
+    setSelectText("selTongueBody", O.tongueBody);
+    setSelectText("selCoatColor", O.coatColor);
+    setSelectText("selCoatQuality", O.coatQuality);
+    setSelectText("selPulseDepth", O.pulseDepth);
+    setSelectText("selPulseRate", O.pulseRate);
+    setSelectText("selPulseShape", O.pulseShape);
+  }
+  function setSelectText(selId, map){
+    const s = el(selId);
+    for(const opt of s.options){
+      if(!opt.value) { opt.textContent = ""; continue; }
+      opt.textContent = map[opt.value] || opt.value;
+    }
   }
 
   // ========= LOAD SYMPTOMS =========
@@ -396,7 +613,6 @@
       regionsData = data?.regions || {};
     }catch(err){
       regionsData = {};
-      // show error in symptom list area
       symptomListEl.innerHTML =
         `<div class="warn">${lang==="zh"
           ? `加载症状失败：GET /api/symptoms 错误（${err?.message||err}）`
@@ -410,7 +626,6 @@
   function renderRegionButtons(){
     regionButtonsEl.innerHTML = "";
     for(const key of REGION_ORDER){
-      // only show if backend has symptoms for the region (avoid empty buttons)
       const has = Array.isArray(regionsData[key]) && regionsData[key].length > 0;
       if(!has) continue;
 
@@ -476,7 +691,6 @@
       selectedSummaryEl.textContent = T("noneSelected");
       return;
     }
-    // group by region label
     const by = {};
     for(const it of selected){
       const label = R(it.regionKey);
@@ -492,6 +706,26 @@
     selectedSummaryEl.innerHTML = lines.join("");
   }
 
+  // ========= FOUR EXAMS WIRING =========
+  function bindFour(){
+    const hook = (id, setter) => {
+      el(id).addEventListener("change", (e)=>{ setter(e.target.value || ""); });
+    };
+
+    hook("selDuration", v=>four.context.duration=v);
+    hook("selSweat", v=>four.context.sweat=v);
+    hook("selThirst", v=>four.context.thirst=v);
+    hook("selPain", v=>four.context.painQuality=v);
+
+    hook("selTongueBody", v=>four.tongue.body=v);
+    hook("selCoatColor", v=>four.tongue.coatColor=v);
+    hook("selCoatQuality", v=>four.tongue.coatQuality=v);
+
+    hook("selPulseDepth", v=>four.pulse.depth=v);
+    hook("selPulseRate", v=>four.pulse.rate=v);
+    hook("selPulseShape", v=>four.pulse.shape=v);
+  }
+
   // ========= ANALYZE =========
   function renderResult(r){
     if(!r){
@@ -500,10 +734,8 @@
     }
 
     const f = UI[lang].field;
-
-    // Some backend fields might be Chinese even in EN; we keep them but label in English.
     const maybeRuleTextNote = (lang==="en")
-      ? `<span class="muted small">(rule text may be Chinese unless TAG_EXPLANATIONS/TREATMENT are bilingual)</span>`
+      ? `<span class="muted small">(rule text may be Chinese unless your backend TAG_EXPLANATIONS/TREATMENT are bilingual)</span>`
       : "";
 
     let html = "";
@@ -519,7 +751,6 @@
     if(r.aiError) html += `<div class="warn"><span class="label">${f.ai}:</span> ${escapeHtml(r.aiError)}</div>`;
     if(r.warning) html += `<div class="warn">${escapeHtml(r.warning)}</div>`;
 
-    // Eight principles
     if(r.eightPrinciples){
       const ep = r.eightPrinciples;
       html += `<div class="divider"></div>`;
@@ -538,12 +769,20 @@
   }
 
   function buildPayload(){
-    return {
+    const payload = {
       lang,
       symptoms: selected.map(it=>({ id: it.id, region: R(it.regionKey) })),
-      // optional structured fields (future): tongue/pulse/context
-      context: {}
+      context: {},
+      tongue: {},
+      pulse: {}
     };
+
+    // only include non-empty fields (clean payload)
+    for(const [k,v] of Object.entries(four.context)) if(v) payload.context[k]=v;
+    for(const [k,v] of Object.entries(four.tongue)) if(v) payload.tongue[k]=v;
+    for(const [k,v] of Object.entries(four.pulse)) if(v) payload.pulse[k]=v;
+
+    return payload;
   }
 
   async function handleAnalyze(){
@@ -601,31 +840,28 @@
   el("btnEn").onclick = async ()=>{ lang="en"; await boot(true); };
 
   // ========= BOOT =========
-  async function boot(reload){
+  async function boot(){
     document.documentElement.lang = (lang==="zh" ? "zh-CN" : "en");
     await loadSymptoms();
 
-    // if current region missing after reload, pick first available
-    const available = REGION_ORDER.filter(k=>Array.isArray(regionsData[k]) && regionsData[k].length);
+    const available = ["head","eye","ear","nose","throat","mouth","chest","upperAbd","midAbd","lowerAbd","stool","urine","whole"]
+      .filter(k=>Array.isArray(regionsData[k]) && regionsData[k].length);
     if(!available.length){
-      // no data
       applyTexts();
       renderResult({ title: lang==="zh" ? "错误" : "Error", warning: lang==="zh" ? "后端没有返回任何症状数据。" : "Backend returned no symptom data." });
       return;
     }
     if(!available.includes(currentRegion)) currentRegion = available[0];
 
-    // clear selections only if desired (we keep selections across lang)
     applyTexts();
 
-    // debug payload area
+    // keep selected even when language changes
     dbgPreEl.textContent = lastPayload ? JSON.stringify(lastPayload, null, 2) : "";
   }
 
-  boot(false);
+  bindFour();
+  boot();
 </script>
 </body>
 </html>
-
-
 
