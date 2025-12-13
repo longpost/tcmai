@@ -1,867 +1,240 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>TCM Self-check (Educational)</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TCM Pattern Self-Check (Educational)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    :root{
-      --bg:#f5f5f7; --card:#fff; --border:#e5e7eb;
-      --text:#111827; --muted:#6b7280;
-      --accent:#2563eb; --accentSoft:rgba(37,99,235,.10);
-      --danger:#b00020; --ok:#065f46;
-      --pill:#f3f4f6; --pillText:#374151;
-      --pillSel:#2563eb; --pillSelText:#fff;
-      --shadow:0 8px 20px rgba(0,0,0,.05);
-      --radius:16px;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0; padding:16px;
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans","PingFang SC","Microsoft YaHei",sans-serif;
-      background: radial-gradient(circle at top, #fff, var(--bg));
-      color:var(--text);
-      display:flex; gap:16px; min-height:100vh;
-    }
-    .card{background:var(--card); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px 18px}
-    .left{flex:0 0 360px; display:flex; flex-direction:column; gap:12px}
-    .right{flex:1; min-width:0; display:flex; flex-direction:column; gap:12px}
-    h1{font-size:1.05rem; margin:0 0 6px}
-    h2{font-size:0.98rem; margin:0 0 8px}
-    .muted{color:var(--muted); font-size:.86rem; line-height:1.45}
-    .row{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
-    .btn{
-      border-radius:999px; border:1px solid var(--border);
-      padding:6px 12px; font-size:.84rem; cursor:pointer;
-      background:#fafafa; color:var(--muted);
-      transition:all .12s ease;
-      user-select:none;
-    }
-    .btn.active{border-color:var(--accent); background:var(--accentSoft); color:var(--accent); font-weight:600}
-    .pillwrap{display:flex; flex-wrap:wrap; gap:6px; margin-top:6px}
-    .pill{
-      font-size:.82rem; padding:5px 10px; border-radius:999px;
-      border:1px solid var(--border); background:var(--pill); color:var(--pillText);
-      cursor:pointer; transition:all .12s ease; white-space:nowrap;
-    }
-    .pill.selected{border-color:var(--accent); background:var(--pillSel); color:var(--pillSelText)}
-    .primary{
-      display:inline-flex; align-items:center; justify-content:center;
-      padding:9px 16px; border-radius:999px; border:none;
-      background:var(--accent); color:#fff; font-size:.92rem; cursor:pointer;
-      box-shadow:0 4px 10px rgba(37,99,235,.28);
-      transition:transform .06s ease, box-shadow .15s ease;
-    }
-    .primary:active{transform:translateY(1px); box-shadow:0 2px 6px rgba(37,99,235,.25)}
-    .primary:disabled{opacity:.6; cursor:wait; box-shadow:none}
-    .kpi{font-size:.82rem; color:var(--muted)}
-    .kpi strong{color:var(--text)}
-    .divider{height:1px; background:var(--border); margin:8px 0}
-    .result{font-size:.92rem; line-height:1.62}
-    .result .title{font-weight:700; margin-bottom:4px}
-    .label{font-weight:700}
-    .warn{color:var(--danger); margin-top:6px}
-    .ok{color:var(--ok)}
-    .small{font-size:.84rem}
-    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}
-    details{margin-top:8px}
-    details summary{cursor:pointer; color:var(--muted); font-size:.84rem}
-    pre{background:#0b1020; color:#e5e7eb; padding:10px; border-radius:12px; overflow:auto; font-size:.78rem; line-height:1.45}
-
-    /* Four exams form */
-    .grid{
-      display:grid; gap:10px;
-      grid-template-columns: repeat(2, minmax(0,1fr));
-    }
-    .field{
-      display:flex; flex-direction:column; gap:4px;
-    }
-    .field label{
-      font-size:.82rem; color:var(--muted);
-    }
-    select{
-      width:100%;
-      border:1px solid var(--border);
-      border-radius:12px;
-      padding:8px 10px;
-      background:#fff;
-      color:var(--text);
-      font-size:.9rem;
-      outline:none;
-    }
-    .span2{grid-column:1 / -1}
-
-    /* SVG styles */
-    .svgbox{border:1px solid #eee; border-radius:12px; padding:10px; background: radial-gradient(circle at 50% 0%, #fdfdfd, #f3f4f6)}
-    svg{width:100%; height:auto}
-    .hot{cursor:pointer; transition:fill .12s ease, stroke .12s ease, transform .08s ease}
-    .hot:hover{fill:#eef2ff; stroke:#93c5fd}
-    .hot:active{transform:translateY(1px)}
-    .svglab{font-size:9px; fill:#6b7280; pointer-events:none}
-
-    @media (max-width: 900px){
-      body{flex-direction:column}
-      .left{flex:1; width:100%}
-    }
+    body { font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif; margin:0; background:#f6f7f9; }
+    h1,h2 { margin:0 0 8px 0; }
+    .wrap { display:flex; gap:16px; padding:16px; }
+    .card { background:#fff; border-radius:8px; padding:12px; box-shadow:0 1px 3px rgba(0,0,0,.1); }
+    .left { width:260px; }
+    .right { flex:1; display:flex; flex-direction:column; gap:12px; }
+    button { cursor:pointer; }
+    .region-btn { display:block; width:100%; margin-bottom:6px; padding:6px 8px; border-radius:6px; border:1px solid #ccc; background:#fafafa; }
+    .region-btn.active { background:#2563eb; color:#fff; border-color:#2563eb; }
+    .tag { display:inline-block; margin:4px; padding:4px 8px; border-radius:999px; border:1px solid #aaa; background:#f3f3f3; }
+    .tag.selected { background:#2563eb; color:#fff; border-color:#2563eb; }
+    .muted { color:#666; font-size:13px; }
+    pre { background:#111; color:#0f0; padding:8px; overflow:auto; font-size:12px; }
   </style>
 </head>
+
 <body>
+
+<div class="wrap">
+
   <!-- LEFT -->
-  <div class="left">
-    <div class="card">
-      <div class="row" style="justify-content:space-between; align-items:flex-start;">
-        <div>
-          <h1 id="titleRegion">Region</h1>
-          <div class="muted" id="tipText"></div>
-          <div class="kpi" style="margin-top:6px;">
-            <span id="apiLabel">API</span>：
-            <a id="apiHost" href="#" target="_blank" rel="noreferrer" class="mono"></a>
-          </div>
-        </div>
-        <div class="row" style="justify-content:flex-end;">
-          <button class="btn" id="btnZh">中文</button>
-          <button class="btn" id="btnEn">English</button>
-        </div>
-      </div>
+  <div class="card left">
+    <h1 id="ui-region-title">Region</h1>
 
-      <div class="divider"></div>
-
-      <!-- Human body big diagram -->
-      <div class="svgbox">
-        <svg viewBox="0 0 260 430" aria-label="body-map">
-          <g>
-            <circle cx="130" cy="55" r="30" fill="#fff" stroke="#cbd5e1"></circle>
-            <rect x="95" y="90" width="70" height="140" rx="26" fill="#fff" stroke="#cbd5e1"></rect>
-            <rect x="70" y="105" width="22" height="120" rx="10" fill="#fff" stroke="#cbd5e1"></rect>
-            <rect x="168" y="105" width="22" height="120" rx="10" fill="#fff" stroke="#cbd5e1"></rect>
-            <rect x="112" y="230" width="18" height="120" rx="10" fill="#fff" stroke="#cbd5e1"></rect>
-            <rect x="130" y="230" width="18" height="120" rx="10" fill="#fff" stroke="#cbd5e1"></rect>
-          </g>
-
-          <g class="hot" onclick="selectRegion('head')">
-            <circle cx="130" cy="55" r="30" fill="transparent" stroke="transparent"></circle>
-            <text x="130" y="58" text-anchor="middle" class="svglab" id="labHead">Head</text>
-          </g>
-
-          <g class="hot" onclick="selectRegion('chest')">
-            <rect x="105" y="95" width="50" height="50" rx="16" fill="transparent" stroke="#e5e7eb"></rect>
-            <text x="130" y="124" text-anchor="middle" class="svglab" id="labChest">Chest</text>
-          </g>
-
-          <g class="hot" onclick="selectRegion('upperAbd')">
-            <rect x="105" y="145" width="50" height="42" rx="16" fill="transparent" stroke="#e5e7eb"></rect>
-            <text x="130" y="170" text-anchor="middle" class="svglab" id="labUpper">Upper</text>
-          </g>
-
-          <g class="hot" onclick="selectRegion('midAbd')">
-            <rect x="105" y="187" width="50" height="36" rx="14" fill="transparent" stroke="#e5e7eb"></rect>
-            <text x="130" y="208" text-anchor="middle" class="svglab" id="labMid">Mid</text>
-          </g>
-
-          <g class="hot" onclick="selectRegion('lowerAbd')">
-            <rect x="110" y="223" width="40" height="44" rx="16" fill="transparent" stroke="#e5e7eb"></rect>
-            <text x="130" y="249" text-anchor="middle" class="svglab" id="labLower">Lower</text>
-          </g>
-
-          <g class="hot" onclick="selectRegion('whole')">
-            <rect x="60" y="95" width="140" height="260" rx="28" fill="transparent" stroke="transparent"></rect>
-            <text x="130" y="330" text-anchor="middle" class="svglab" id="labWhole">Whole</text>
-          </g>
-
-          <g class="hot" onclick="selectRegion('stool')">
-            <rect x="50" y="372" width="70" height="28" rx="12" fill="#fff" stroke="#cbd5e1"></rect>
-            <text x="85" y="390" text-anchor="middle" class="svglab" id="labStool">Stool</text>
-          </g>
-          <g class="hot" onclick="selectRegion('urine')">
-            <rect x="140" y="372" width="70" height="28" rx="12" fill="#fff" stroke="#cbd5e1"></rect>
-            <text x="175" y="390" text-anchor="middle" class="svglab" id="labUrine">Urine</text>
-          </g>
-        </svg>
-      </div>
-
-      <!-- Five senses wheel -->
-      <div style="margin-top:10px;">
-        <div class="muted" id="fiveSenseTitle" style="margin-bottom:6px;">Five senses</div>
-        <div class="svgbox">
-          <svg viewBox="0 0 260 180" aria-label="five-senses">
-            <circle cx="130" cy="90" r="68" fill="#fff" stroke="#cbd5e1"></circle>
-            <circle cx="130" cy="90" r="28" fill="#f8fafc" stroke="#e5e7eb"></circle>
-            <text x="130" y="94" text-anchor="middle" class="svglab" id="labFace">Face</text>
-
-            <g class="hot" onclick="selectRegion('eye')">
-              <circle cx="80" cy="70" r="20" fill="transparent" stroke="#e5e7eb"></circle>
-              <text x="80" y="74" text-anchor="middle" class="svglab" id="labEye">Eyes</text>
-            </g>
-            <g class="hot" onclick="selectRegion('ear')">
-              <circle cx="180" cy="70" r="20" fill="transparent" stroke="#e5e7eb"></circle>
-              <text x="180" y="74" text-anchor="middle" class="svglab" id="labEar">Ears</text>
-            </g>
-            <g class="hot" onclick="selectRegion('nose')">
-              <circle cx="130" cy="40" r="20" fill="transparent" stroke="#e5e7eb"></circle>
-              <text x="130" y="44" text-anchor="middle" class="svglab" id="labNose">Nose</text>
-            </g>
-            <g class="hot" onclick="selectRegion('throat')">
-              <circle cx="105" cy="130" r="20" fill="transparent" stroke="#e5e7eb"></circle>
-              <text x="105" y="134" text-anchor="middle" class="svglab" id="labThroat">Throat</text>
-            </g>
-            <g class="hot" onclick="selectRegion('mouth')">
-              <circle cx="155" cy="130" r="20" fill="transparent" stroke="#e5e7eb"></circle>
-              <text x="155" y="134" text-anchor="middle" class="svglab" id="labMouth">Mouth</text>
-            </g>
-          </svg>
-        </div>
-      </div>
-
-      <div class="divider"></div>
-      <div class="row" id="regionButtons"></div>
+    <div style="margin-bottom:8px;">
+      <button id="btn-zh">中文</button>
+      <button id="btn-en">English</button>
     </div>
 
-    <div class="card">
-      <h2 id="selectedTitle">Selected</h2>
-      <div class="kpi" id="selectedCount"></div>
-      <div id="selectedSummary" class="small muted"></div>
+    <div id="regionButtons"></div>
+
+    <div class="muted" style="margin-top:8px;">
+      API: <span id="apiBase"></span>
     </div>
   </div>
 
   <!-- RIGHT -->
   <div class="right">
-    <!-- Four exams -->
+
     <div class="card">
-      <h2 id="fourTitle">Four Examinations</h2>
-      <div class="muted" id="fourHint" style="margin-bottom:10px;"></div>
-
-      <div class="grid">
-        <div class="field">
-          <label id="lblDuration"></label>
-          <select id="selDuration">
-            <option value=""></option>
-            <option value="acute">acute</option>
-            <option value="chronic">chronic</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label id="lblSweat"></label>
-          <select id="selSweat">
-            <option value=""></option>
-            <option value="spontaneous">spontaneous</option>
-            <option value="night">night</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label id="lblThirst"></label>
-          <select id="selThirst">
-            <option value=""></option>
-            <option value="warm">warm drinks</option>
-            <option value="cold">cold drinks</option>
-            <option value="none">no thirst</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label id="lblPain"></label>
-          <select id="selPain">
-            <option value=""></option>
-            <option value="dull">dull (better with pressure)</option>
-            <option value="distending">distending/migrating</option>
-            <option value="stabbing">stabbing/fixed</option>
-            <option value="refusePress">refuses pressure</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label id="lblTongueBody"></label>
-          <select id="selTongueBody">
-            <option value=""></option>
-            <option value="pale">pale</option>
-            <option value="red">red</option>
-            <option value="purple">purple/dusky</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label id="lblCoatColor"></label>
-          <select id="selCoatColor">
-            <option value=""></option>
-            <option value="white">white</option>
-            <option value="yellow">yellow</option>
-            <option value="none">scanty/peeled</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label id="lblCoatQuality"></label>
-          <select id="selCoatQuality">
-            <option value=""></option>
-            <option value="greasy">greasy</option>
-            <option value="thick">thick</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label id="lblPulseDepth"></label>
-          <select id="selPulseDepth">
-            <option value=""></option>
-            <option value="floating">floating</option>
-            <option value="deep">deep</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label id="lblPulseRate"></label>
-          <select id="selPulseRate">
-            <option value=""></option>
-            <option value="rapid">rapid</option>
-            <option value="slow">slow</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label id="lblPulseShape"></label>
-          <select id="selPulseShape">
-            <option value=""></option>
-            <option value="thin">thin</option>
-            <option value="slippery">slippery</option>
-          </select>
-        </div>
-
-        <div class="field span2">
-          <div class="muted small" id="fourNote"></div>
-        </div>
-      </div>
+      <h2 id="ui-selected-title">Selected</h2>
+      <div id="selectedBox" class="muted">None selected.</div>
     </div>
 
-    <!-- Symptoms -->
     <div class="card">
-      <h1 id="titleSymptoms">Symptoms (by region)</h1>
-      <div class="muted" id="currentRegionTitle"></div>
+      <h2 id="ui-symptom-title">Symptoms (by region)</h2>
+      <div id="currentRegion" class="muted"></div>
       <div id="symptomList"></div>
+    </div>
 
-      <div style="margin-top:10px;">
-        <button id="analyzeBtn" class="primary">Analyze</button>
-        <div class="muted" id="noteText" style="margin-top:8px;"></div>
+    <div class="card">
+      <button id="analyzeBtn">Analyze (backend)</button>
+      <div class="muted" id="tipText"></div>
+    </div>
 
-        <details id="dbgBox">
-          <summary id="dbgTitle">Debug: payload</summary>
-          <pre id="dbgPre"></pre>
-        </details>
+    <div class="card">
+      <h2 id="ui-result-title">Result</h2>
+      <div id="resultBox" class="muted">
+        Select multiple symptoms and click Analyze.
       </div>
     </div>
 
-    <!-- Result -->
     <div class="card">
-      <h2 id="resultTitle">Result</h2>
-      <div id="analysisResult" class="result"></div>
+      <h2>Debug</h2>
+      <pre id="debugBox"></pre>
     </div>
+
   </div>
+</div>
 
 <script>
-  // ========= CONFIG =========
-  const API_BASE = "https://tcmai-api.vercel.app";
-  const API_SYMPTOMS = `${API_BASE}/api/symptoms`;
-  const API_ANALYZE = `${API_BASE}/api/analyze`;
+/* ================= CONFIG ================= */
+const API_BASE = "https://tcmai-api.vercel.app";
+const API_SYMPTOMS = API_BASE + "/api/symptoms";
+const API_ANALYZE  = API_BASE + "/api/analyze";
 
-  // ========= i18n =========
-  const UI = {
-    zh: {
-      titleRegion: "部位选择",
-      tip: "提示：先选部位，再多选症状（所有症状来自后端 /api/symptoms）。",
-      api: "API",
-      fiveSense: "五官快捷选择",
-      titleSymptoms: "症状多选（按部位）",
-      currentRegion: "当前部位：",
-      selectedTitle: "已选症状",
-      selectedCount: "已选：",
-      noneSelected: "暂未选择任何症状。",
-      analyze: "生成辨证建议（从后端）",
-      analyzing: "正在请求后端…",
-      note: "温馨提示：仅用于学习与自我复核，不作诊断处方。",
-      dbg: "调试：payload（发给后端）",
-      resultTitle: "辨证结果",
-      resultHint: "请选择多个症状后点击“生成辨证建议”。",
-      need2: "请至少选择 2 条症状。",
+document.getElementById("apiBase").textContent = API_BASE;
 
-      fourTitle: "四诊信息（用于八纲粗判）",
-      fourHint: "可选填：用于提高“寒热/表里/虚实”判断稳定性（自用复核）。",
-      fourNote: "注意：这不是诊断问诊，仅为学习复核。你也可以先不填。",
-
-      labels: {
-        duration:"病程", sweat:"汗", thirst:"口渴/喜饮", pain:"疼痛特点",
-        tongueBody:"舌质", coatColor:"苔色", coatQuality:"苔质",
-        pulseDepth:"脉位", pulseRate:"脉数", pulseShape:"脉形"
-      },
-      opts: {
-        duration:{ acute:"急性", chronic:"慢性" },
-        sweat:{ spontaneous:"自汗", night:"盗汗" },
-        thirst:{ warm:"喜热饮", cold:"喜冷饮", none:"不渴/不欲饮" },
-        pain:{ dull:"隐痛喜按", distending:"胀痛/窜痛", stabbing:"刺痛固定", refusePress:"拒按" },
-        tongueBody:{ pale:"淡", red:"红", purple:"紫暗" },
-        coatColor:{ white:"白苔", yellow:"黄苔", none:"少苔/剥苔" },
-        coatQuality:{ greasy:"腻", thick:"厚" },
-        pulseDepth:{ floating:"浮", deep:"沉" },
-        pulseRate:{ rapid:"数", slow:"迟" },
-        pulseShape:{ thin:"细", slippery:"滑" }
-      },
-
-      regions: {
-        head:"头部", eye:"眼", ear:"耳", nose:"鼻", throat:"咽喉", mouth:"口腔/口渴",
-        chest:"胸部 / 心肺", upperAbd:"上腹 / 胃脘", midAbd:"中腹", lowerAbd:"下腹 / 月经",
-        stool:"大便", urine:"小便", whole:"全身 / 体质"
-      },
-      field: {
-        pattern:"证素倾向",
-        explanation:"辨证思路",
-        principle:"治法思路",
-        acupuncture:"针灸思路",
-        herbal:"方药思路",
-        ai:"AI 解释",
-        warning:"提示",
-        eight:"八纲/八证",
-        evidence:"依据"
-      }
-    },
-    en: {
-      titleRegion: "Region",
-      tip: "Tip: select a region, then multi-select symptoms (loaded from backend /api/symptoms).",
-      api: "API",
-      fiveSense: "Quick pick: Five senses",
-      titleSymptoms: "Symptoms (by region)",
-      currentRegion: "Current region: ",
-      selectedTitle: "Selected",
-      selectedCount: "Selected: ",
-      noneSelected: "None selected.",
-      analyze: "Analyze (backend)",
-      analyzing: "Requesting backend…",
-      note: "Note: educational self-check only; not diagnosis or medical advice.",
-      dbg: "Debug: payload (sent to backend)",
-      resultTitle: "Result",
-      resultHint: "Select multiple symptoms and click Analyze.",
-      need2: "Please select at least 2 symptoms.",
-
-      fourTitle: "Four Examinations (for Eight Principles)",
-      fourHint: "Optional: improves stability of cold/heat, exterior/interior, deficiency/excess scoring.",
-      fourNote: "Self-check only (not a clinical intake). You can leave these empty.",
-
-      labels: {
-        duration:"Course", sweat:"Sweat", thirst:"Thirst", pain:"Pain quality",
-        tongueBody:"Tongue body", coatColor:"Coat color", coatQuality:"Coat quality",
-        pulseDepth:"Pulse depth", pulseRate:"Pulse rate", pulseShape:"Pulse shape"
-      },
-      opts: {
-        duration:{ acute:"Acute", chronic:"Chronic" },
-        sweat:{ spontaneous:"Spontaneous sweating", night:"Night sweating" },
-        thirst:{ warm:"Prefers warm drinks", cold:"Prefers cold drinks", none:"No thirst" },
-        pain:{ dull:"Dull (better with pressure)", distending:"Distending/migrating", stabbing:"Stabbing/fixed", refusePress:"Refuses pressure" },
-        tongueBody:{ pale:"Pale", red:"Red", purple:"Purple/dusky" },
-        coatColor:{ white:"White", yellow:"Yellow", none:"Scanty/peeled" },
-        coatQuality:{ greasy:"Greasy", thick:"Thick" },
-        pulseDepth:{ floating:"Floating", deep:"Deep" },
-        pulseRate:{ rapid:"Rapid", slow:"Slow" },
-        pulseShape:{ thin:"Thin", slippery:"Slippery" }
-      },
-
-      regions: {
-        head:"Head", eye:"Eyes", ear:"Ears", nose:"Nose", throat:"Throat", mouth:"Mouth/Thirst",
-        chest:"Chest", upperAbd:"Upper abdomen", midAbd:"Mid abdomen", lowerAbd:"Lower abdomen / Menses",
-        stool:"Stool", urine:"Urine", whole:"Whole body"
-      },
-      field: {
-        pattern:"Pattern hints",
-        explanation:"Reasoning",
-        principle:"Principle",
-        acupuncture:"Acupuncture",
-        herbal:"Herbal direction",
-        ai:"AI",
-        warning:"Safety",
-        eight:"Eight Principles",
-        evidence:"Evidence"
-      }
-    }
-  };
-
-  // ========= STATE =========
-  let lang = "en";
-  let currentRegion = "head";
-  let regionsData = {};
-  let selected = [];
-  let lastPayload = null;
-
-  // four exams state
-  const four = {
-    context: { duration:"", sweat:"", thirst:"", painQuality:"" },
-    tongue: { body:"", coatColor:"", coatQuality:"" },
-    pulse: { depth:"", rate:"", shape:"" }
-  };
-
-  // ========= DOM =========
-  const el = (id)=>document.getElementById(id);
-  const regionButtonsEl = el("regionButtons");
-  const symptomListEl = el("symptomList");
-  const selectedSummaryEl = el("selectedSummary");
-  const selectedCountEl = el("selectedCount");
-  const currentRegionTitleEl = el("currentRegionTitle");
-  const analysisResultEl = el("analysisResult");
-  const analyzeBtn = el("analyzeBtn");
-  const dbgTitleEl = el("dbgTitle");
-  const dbgPreEl = el("dbgPre");
-
-  const svgLabelMap = {
-    head:"labHead", chest:"labChest", upperAbd:"labUpper", midAbd:"labMid", lowerAbd:"labLower",
-    whole:"labWhole", stool:"labStool", urine:"labUrine",
-    eye:"labEye", ear:"labEar", nose:"labNose", throat:"labThroat", mouth:"labMouth",
-    face:"labFace"
-  };
-
-  function T(key){ return UI[lang][key]; }
-  function R(key){ return UI[lang].regions[key] || key; }
-
-  function applyTexts(){
-    el("titleRegion").textContent = T("titleRegion");
-    el("tipText").textContent = T("tip");
-    el("apiLabel").textContent = T("api");
-    el("fiveSenseTitle").textContent = T("fiveSense");
-    el("titleSymptoms").textContent = T("titleSymptoms");
-    el("selectedTitle").textContent = T("selectedTitle");
-    analyzeBtn.textContent = T("analyze");
-    el("noteText").textContent = T("note");
-    dbgTitleEl.textContent = T("dbg");
-    el("resultTitle").textContent = T("resultTitle");
-
-    // four exams texts//
-    el("fourTitle").textContent = T("fourTitle");
-    el("fourHint").textContent = T("fourHint");
-    el("fourNote").textContent = T("fourNote");
-
-    const L = UI[lang].labels;
-    el("lblDuration").textContent = L.duration;
-    el("lblSweat").textContent = L.sweat;
-    el("lblThirst").textContent = L.thirst;
-    el("lblPain").textContent = L.pain;
-    el("lblTongueBody").textContent = L.tongueBody;
-    el("lblCoatColor").textContent = L.coatColor;
-    el("lblCoatQuality").textContent = L.coatQuality;
-    el("lblPulseDepth").textContent = L.pulseDepth;
-    el("lblPulseRate").textContent = L.pulseRate;
-    el("lblPulseShape").textContent = L.pulseShape;
-
-    // rewrite option labels based on lang (keep values)
-    rewriteSelectOptions();
-
-    const zh = el("btnZh"), en = el("btnEn");
-    zh.classList.toggle("active", lang==="zh");
-    en.classList.toggle("active", lang==="en");
-
-    // svg labels
-    el(svgLabelMap.head).textContent = R("head");
-    el(svgLabelMap.chest).textContent = R("chest");
-    el(svgLabelMap.upperAbd).textContent = lang==="zh" ? "上腹" : "Upper";
-    el(svgLabelMap.midAbd).textContent = lang==="zh" ? "中腹" : "Mid";
-    el(svgLabelMap.lowerAbd).textContent = lang==="zh" ? "下腹" : "Lower";
-    el(svgLabelMap.whole).textContent = lang==="zh" ? "全身" : "Whole";
-    el(svgLabelMap.stool).textContent = R("stool");
-    el(svgLabelMap.urine).textContent = R("urine");
-
-    el(svgLabelMap.face).textContent = lang==="zh" ? "五官" : "Face";
-    el(svgLabelMap.eye).textContent = R("eye");
-    el(svgLabelMap.ear).textContent = R("ear");
-    el(svgLabelMap.nose).textContent = R("nose");
-    el(svgLabelMap.throat).textContent = R("throat");
-    el(svgLabelMap.mouth).textContent = lang==="zh" ? "口" : "Mouth";
-
-    const host = API_BASE.replace(/^https?:\/\//,"");
-    const apiHost = el("apiHost");
-    apiHost.textContent = host;
-    apiHost.href = API_BASE;
-
-    updateCurrentRegionTitle();
-    renderRegionButtons();
-    renderSymptoms();
-    renderSelected();
-    renderResult(null);
+/* ================= I18N ================= */
+const TEXT = {
+  zh: {
+    region: "部位选择",
+    selected: "已选症状",
+    symptoms: "症状多选（按部位）",
+    analyze: "生成辨证建议（从后端）",
+    tip: "仅用于学习与自我复核，不作诊断处方。",
+    none: "暂未选择任何症状。",
+    current: "当前部位：",
+    result: "辨证结果"
+  },
+  en: {
+    region: "Region",
+    selected: "Selected",
+    symptoms: "Symptoms (by region)",
+    analyze: "Analyze (backend)",
+    tip: "Educational self-check only; not diagnosis or medical advice.",
+    none: "None selected.",
+    current: "Current region:",
+    result: "Result"
   }
+};
 
-  function rewriteSelectOptions(){
-    const O = UI[lang].opts;
+let lang = "en";
 
-    setSelectText("selDuration", O.duration);
-    setSelectText("selSweat", O.sweat);
-    setSelectText("selThirst", O.thirst);
-    setSelectText("selPain", O.pain);
-    setSelectText("selTongueBody", O.tongueBody);
-    setSelectText("selCoatColor", O.coatColor);
-    setSelectText("selCoatQuality", O.coatQuality);
-    setSelectText("selPulseDepth", O.pulseDepth);
-    setSelectText("selPulseRate", O.pulseRate);
-    setSelectText("selPulseShape", O.pulseShape);
+/* ================= STATE ================= */
+let regions = {};        // from backend
+let regionKeys = [];
+let currentRegion = null;
+let selected = [];       // [{id, zh, en}]
+
+/* ================= HELPERS ================= */
+function t(k){ return TEXT[lang][k]; }
+function setText(){
+  document.getElementById("ui-region-title").textContent = t("region");
+  document.getElementById("ui-selected-title").textContent = t("selected");
+  document.getElementById("ui-symptom-title").textContent = t("symptoms");
+  document.getElementById("ui-result-title").textContent = t("result");
+  document.getElementById("analyzeBtn").textContent = t("analyze");
+  document.getElementById("tipText").textContent = t("tip");
+}
+
+/* ================= LOAD SYMPTOMS ================= */
+async function loadSymptoms(){
+  const url = API_SYMPTOMS + "?lang=" + lang;
+  const resp = await fetch(url);
+  if(!resp.ok) throw new Error("symptoms HTTP " + resp.status);
+  const data = await resp.json();
+  regions = data.regions || {};
+  regionKeys = Object.keys(regions);
+  currentRegion = regionKeys[0] || null;
+}
+
+/* ================= RENDER ================= */
+function renderRegions(){
+  const box = document.getElementById("regionButtons");
+  box.innerHTML = "";
+  regionKeys.forEach(k=>{
+    const b = document.createElement("button");
+    b.className = "region-btn" + (k===currentRegion?" active":"");
+    b.textContent = k;
+    b.onclick = ()=>{ currentRegion = k; renderRegions(); renderSymptoms(); };
+    box.appendChild(b);
+  });
+}
+
+function renderSymptoms(){
+  const box = document.getElementById("symptomList");
+  box.innerHTML = "";
+  document.getElementById("currentRegion").textContent =
+    t("current") + " " + currentRegion;
+
+  const list = regions[currentRegion] || [];
+  if(!list.length){
+    box.innerHTML = "<div class='muted'>No symptoms for this region</div>";
+    return;
   }
-  function setSelectText(selId, map){
-    const s = el(selId);
-    for(const opt of s.options){
-      if(!opt.value) { opt.textContent = ""; continue; }
-      opt.textContent = map[opt.value] || opt.value;
-    }
-  }
-
-  // ========= LOAD SYMPTOMS =========
-  async function loadSymptoms(){
-    try{
-      const url = `${API_SYMPTOMS}?lang=${encodeURIComponent(lang)}`;
-      const resp = await fetch(url);
-      if(!resp.ok) throw new Error(`HTTP ${resp.status}`);
-      const data = await resp.json();
-      regionsData = data?.regions || {};
-    }catch(err){
-      regionsData = {};
-      symptomListEl.innerHTML =
-        `<div class="warn">${lang==="zh"
-          ? `加载症状失败：GET /api/symptoms 错误（${err?.message||err}）`
-          : `Failed to load symptoms: GET /api/symptoms failed (${err?.message||err}).`}</div>`;
-    }
-  }
-
-  // ========= REGION BUTTONS =========
-  const REGION_ORDER = ["head","eye","ear","nose","throat","mouth","chest","upperAbd","midAbd","lowerAbd","stool","urine","whole"];
-
-  function renderRegionButtons(){
-    regionButtonsEl.innerHTML = "";
-    for(const key of REGION_ORDER){
-      const has = Array.isArray(regionsData[key]) && regionsData[key].length > 0;
-      if(!has) continue;
-
-      const b = document.createElement("button");
-      b.className = "btn" + (key===currentRegion ? " active" : "");
-      b.textContent = R(key);
-      b.onclick = ()=>selectRegion(key);
-      regionButtonsEl.appendChild(b);
-    }
-  }
-
-  function selectRegion(key){
-    currentRegion = key;
-    renderRegionButtons();
-    updateCurrentRegionTitle();
-    renderSymptoms();
-  }
-  window.selectRegion = selectRegion;
-
-  function updateCurrentRegionTitle(){
-    currentRegionTitleEl.textContent = `${T("currentRegion")}${R(currentRegion)}`;
-  }
-
-  // ========= SYMPTOMS =========
-  function isSelected(id, regionKey){
-    return selected.some(x=>x.id===id && x.regionKey===regionKey);
-  }
-  function toggle(id, regionKey){
-    const i = selected.findIndex(x=>x.id===id && x.regionKey===regionKey);
-    if(i>=0) selected.splice(i,1);
-    else selected.push({id, regionKey});
-    renderSymptoms();
-    renderSelected();
-  }
-
-  function renderSymptoms(){
-    const list = regionsData[currentRegion] || [];
-    if(!list.length){
-      symptomListEl.innerHTML =
-        `<div class="muted">${lang==="zh"
-          ? "该部位暂无症状（后端 data.js 里该 region 没配或加载失败）"
-          : "No symptoms for this region (backend has none, or loading failed)."}</div>`;
-      return;
-    }
-    const wrap = document.createElement("div");
-    wrap.className = "pillwrap";
-    for(const s of list){
-      const p = document.createElement("button");
-      p.type="button";
-      p.className = "pill" + (isSelected(s.id, currentRegion) ? " selected" : "");
-      p.textContent = (lang==="en" ? s.en : s.zh) || (s.zh || s.en || s.id);
-      p.onclick = ()=>toggle(s.id, currentRegion);
-      wrap.appendChild(p);
-    }
-    symptomListEl.innerHTML = "";
-    symptomListEl.appendChild(wrap);
-  }
-
-  // ========= SELECTED SUMMARY =========
-  function renderSelected(){
-    selectedCountEl.innerHTML = `${T("selectedCount")}<strong>${selected.length}</strong>`;
-    if(!selected.length){
-      selectedSummaryEl.textContent = T("noneSelected");
-      return;
-    }
-    const by = {};
-    for(const it of selected){
-      const label = R(it.regionKey);
-      if(!by[label]) by[label] = [];
-      const row = (regionsData[it.regionKey] || []).find(x=>x.id===it.id);
-      const name = (lang==="en" ? row?.en : row?.zh) || row?.zh || row?.en || it.id;
-      by[label].push(name);
-    }
-    const lines = Object.keys(by).map(k=>{
-      const uniq = Array.from(new Set(by[k]));
-      return `<div><span class="label">${k}:</span> ${uniq.join(lang==="zh"?"、":", ")}</div>`;
-    });
-    selectedSummaryEl.innerHTML = lines.join("");
-  }
-
-  // ========= FOUR EXAMS WIRING =========
-  function bindFour(){
-    const hook = (id, setter) => {
-      el(id).addEventListener("change", (e)=>{ setter(e.target.value || ""); });
-    };
-
-    hook("selDuration", v=>four.context.duration=v);
-    hook("selSweat", v=>four.context.sweat=v);
-    hook("selThirst", v=>four.context.thirst=v);
-    hook("selPain", v=>four.context.painQuality=v);
-
-    hook("selTongueBody", v=>four.tongue.body=v);
-    hook("selCoatColor", v=>four.tongue.coatColor=v);
-    hook("selCoatQuality", v=>four.tongue.coatQuality=v);
-
-    hook("selPulseDepth", v=>four.pulse.depth=v);
-    hook("selPulseRate", v=>four.pulse.rate=v);
-    hook("selPulseShape", v=>four.pulse.shape=v);
-  }
-
-  // ========= ANALYZE =========
-  function renderResult(r){
-    if(!r){
-      analysisResultEl.innerHTML = `<div class="muted">${T("resultHint")}</div>`;
-      return;
-    }
-
-    const f = UI[lang].field;
-    const maybeRuleTextNote = (lang==="en")
-      ? `<span class="muted small"></span>`
-      : "";
-
-    let html = "";
-    if(r.title) html += `<div class="title">${escapeHtml(r.title)}</div>`;
-
-    if(r.pattern) html += `<div><span class="label">${f.pattern}:</span> ${escapeHtml(r.pattern)} ${maybeRuleTextNote}</div>`;
-    if(r.explanation) html += `<div><span class="label">${f.explanation}:</span> ${escapeHtml(r.explanation)} ${maybeRuleTextNote}</div>`;
-    if(r.principle) html += `<div><span class="label">${f.principle}:</span> ${escapeHtml(r.principle)} ${maybeRuleTextNote}</div>`;
-    if(r.acupuncture) html += `<div><span class="label">${f.acupuncture}:</span> ${escapeHtml(r.acupuncture)} ${maybeRuleTextNote}</div>`;
-    if(r.herbal) html += `<div><span class="label">${f.herbal}:</span> ${escapeHtml(r.herbal)} ${maybeRuleTextNote}</div>`;
-
-    if(r.aiNotes) html += `<div style="margin-top:6px;"><span class="label">${f.ai}:</span> ${escapeHtml(r.aiNotes)}</div>`;
-    if(r.aiError) html += `<div class="warn"><span class="label">${f.ai}:</span> ${escapeHtml(r.aiError)}</div>`;
-    if(r.warning) html += `<div class="warn">${escapeHtml(r.warning)}</div>`;
-
-    if(r.eightPrinciples){
-      const ep = r.eightPrinciples;
-      html += `<div class="divider"></div>`;
-      html += `<div class="title">${f.eight}</div>`;
-      html += `<div><span class="label">Exterior/Interior:</span> ${escapeHtml(ep.interiorExterior || "")}</div>`;
-      html += `<div><span class="label">Cold/Heat:</span> ${escapeHtml(ep.coldHeat || "")}</div>`;
-      html += `<div><span class="label">Def/Excess:</span> ${escapeHtml(ep.defExcess || "")}</div>`;
-      html += `<div><span class="label">Yin/Yang:</span> ${escapeHtml(ep.yinYang || "")}</div>`;
-    }
-    if(Array.isArray(r.eightEvidence) && r.eightEvidence.length){
-      const lines = r.eightEvidence.map(x=>`<li>${escapeHtml(x)}</li>`).join("");
-      html += `<div style="margin-top:6px;"><span class="label">${f.evidence}:</span><ul style="margin:6px 0 0 18px;">${lines}</ul></div>`;
-    }
-
-    analysisResultEl.innerHTML = html;
-  }
-
-  function buildPayload(){
-    const payload = {
-      lang,
-      symptoms: selected.map(it=>({ id: it.id, region: R(it.regionKey) })),
-      context: {},
-      tongue: {},
-      pulse: {}
-    };
-
-    // only include non-empty fields (clean payload)
-    for(const [k,v] of Object.entries(four.context)) if(v) payload.context[k]=v;
-    for(const [k,v] of Object.entries(four.tongue)) if(v) payload.tongue[k]=v;
-    for(const [k,v] of Object.entries(four.pulse)) if(v) payload.pulse[k]=v;
-
-    return payload;
-  }
-
-  async function handleAnalyze(){
-    if(selected.length < 2){
-      alert(T("need2"));
-      return;
-    }
-    analyzeBtn.disabled = true;
-    analyzeBtn.textContent = T("analyzing");
-
-    try{
-      const payload = buildPayload();
-      lastPayload = payload;
-      dbgPreEl.textContent = JSON.stringify(payload, null, 2);
-
-      const resp = await fetch(API_ANALYZE, {
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify(payload)
-      });
-
-      if(!resp.ok){
-        const txt = await resp.text();
-        renderResult({
-          title: lang==="zh" ? "请求失败" : "Request failed",
-          warning: `HTTP ${resp.status}: ${txt}`
-        });
+  list.forEach(s=>{
+    const btn = document.createElement("button");
+    const isSel = selected.some(x=>x.id===s.id);
+    btn.className = "tag" + (isSel?" selected":"");
+    btn.textContent = lang==="zh"?s.zh:s.en;
+    btn.onclick = ()=>{
+      if(isSel){
+        selected = selected.filter(x=>x.id!==s.id);
       }else{
-        const data = await resp.json();
-        renderResult(data);
+        selected.push(s);
       }
-    }catch(err){
-      renderResult({
-        title: lang==="zh" ? "请求失败" : "Request failed",
-        warning: err?.message || String(err)
-      });
-    }finally{
-      analyzeBtn.disabled = false;
-      analyzeBtn.textContent = T("analyze");
-    }
+      renderSymptoms();
+      renderSelected();
+    };
+    box.appendChild(btn);
+  });
+}
+
+function renderSelected(){
+  const box = document.getElementById("selectedBox");
+  if(!selected.length){
+    box.textContent = t("none");
+    return;
   }
+  box.innerHTML = selected.map(s =>
+    `<span class="tag selected">${lang==="zh"?s.zh:s.en}</span>`
+  ).join("");
+}
 
-  analyzeBtn.addEventListener("click", handleAnalyze);
-
-  // ========= UTILS =========
-  function escapeHtml(s){
-    return String(s ?? "")
-      .replaceAll("&","&amp;").replaceAll("<","&lt;")
-      .replaceAll(">","&gt;").replaceAll('"',"&quot;")
-      .replaceAll("'","&#039;");
+/* ================= ANALYZE ================= */
+async function analyze(){
+  if(selected.length < 2){
+    alert("Select at least 2 symptoms");
+    return;
   }
+  const payload = {
+    lang,
+    symptoms: selected.map(s=>({ id:s.id }))
+  };
+  document.getElementById("debugBox").textContent =
+    JSON.stringify(payload,null,2);
 
-  // ========= LANG SWITCH =========
-  el("btnZh").onclick = async ()=>{ lang="zh"; await boot(true); };
-  el("btnEn").onclick = async ()=>{ lang="en"; await boot(true); };
+  const resp = await fetch(API_ANALYZE,{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify(payload)
+  });
+  const data = await resp.json();
+  document.getElementById("resultBox").innerHTML =
+    "<pre>"+JSON.stringify(data,null,2)+"</pre>";
+}
 
-  // ========= BOOT =========
-  async function boot(){
-    document.documentElement.lang = (lang==="zh" ? "zh-CN" : "en");
-    await loadSymptoms();
+/* ================= INIT ================= */
+document.getElementById("btn-zh").onclick = async ()=>{
+  lang="zh"; setText(); await init();
+};
+document.getElementById("btn-en").onclick = async ()=>{
+  lang="en"; setText(); await init();
+};
+document.getElementById("analyzeBtn").onclick = analyze;
 
-    const available = ["head","eye","ear","nose","throat","mouth","chest","upperAbd","midAbd","lowerAbd","stool","urine","whole"]
-      .filter(k=>Array.isArray(regionsData[k]) && regionsData[k].length);
-    if(!available.length){
-      applyTexts();
-      renderResult({ title: lang==="zh" ? "错误" : "Error", warning: lang==="zh" ? "后端没有返回任何症状数据。" : "Backend returned no symptom data." });
-      return;
-    }
-    if(!available.includes(currentRegion)) currentRegion = available[0];
+async function init(){
+  await loadSymptoms();
+  renderRegions();
+  renderSymptoms();
+  renderSelected();
+}
 
-    applyTexts();
-
-    // keep selected even when language changes
-    dbgPreEl.textContent = lastPayload ? JSON.stringify(lastPayload, null, 2) : "";
-  }
-
-  bindFour();
-  boot();
+setText();
+init().catch(e=>{
+  document.getElementById("resultBox").textContent = e.message;
+});
 </script>
+
 </body>
 </html>
 
